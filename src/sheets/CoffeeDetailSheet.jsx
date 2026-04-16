@@ -7,6 +7,9 @@ import * as api from '../lib/api';
 export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
   const scrollRef = useRef(null);
   const [scrollY, setScrollY] = useState(0);
+  const [sheetDragY, setSheetDragY] = useState(0);
+  const touchStartY = useRef(null);
+  const touchStartScroll = useRef(0);
   const [myRating, setMyRating] = useState(0);
   const [hoverStar, setHoverStar] = useState(0);
   const [rated, setRated] = useState(false);
@@ -44,6 +47,22 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
   }, [visible, coffee, user]);
 
   const handleScroll = () => { if (scrollRef.current) setScrollY(scrollRef.current.scrollTop); };
+
+  const handleSheetTouchStart = (e) => {
+    touchStartY.current = e.touches[0].clientY;
+    touchStartScroll.current = scrollRef.current?.scrollTop || 0;
+  };
+  const handleSheetTouchMove = (e) => {
+    if (touchStartY.current === null) return;
+    if (touchStartScroll.current > 2) return;
+    const delta = e.touches[0].clientY - touchStartY.current;
+    if (delta > 0) setSheetDragY(delta);
+  };
+  const handleSheetTouchEnd = () => {
+    if (sheetDragY > 110) { setSheetDragY(0); onClose(); }
+    else setSheetDragY(0);
+    touchStartY.current = null;
+  };
 
   const handleFavorite = async () => {
     if (!coffee) return;
@@ -86,16 +105,21 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
     <>
       <div onClick={onClose} style={{
         position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", zIndex:200,
-        opacity: visible ? 1 : 0, pointerEvents: visible ? "auto" : "none",
-        transition:`opacity 0.3s ${ease}`,
+        opacity: visible ? Math.max(0, 1 - sheetDragY / 300) : 0,
+        pointerEvents: visible ? "auto" : "none",
+        transition: sheetDragY > 0 ? "none" : `opacity 0.3s ${ease}`,
       }}/>
-      <div style={{
-        position:"fixed", inset:0, zIndex:201, display:"flex", flexDirection:"column",
-        transform: visible ? "translateY(0)" : "translateY(102%)",
-        visibility: visible ? "visible" : "hidden",
-        transition:`transform 0.42s ${spring}, visibility 0s ${visible ? "0s" : "0.42s"}`,
-        maxWidth:430, left:"50%", marginLeft:-215,
-      }}>
+      <div
+        onTouchStart={handleSheetTouchStart}
+        onTouchMove={handleSheetTouchMove}
+        onTouchEnd={handleSheetTouchEnd}
+        style={{
+          position:"fixed", inset:0, zIndex:201, display:"flex", flexDirection:"column",
+          transform: visible ? `translateY(${sheetDragY}px)` : "translateY(102%)",
+          visibility: visible ? "visible" : "hidden",
+          transition: sheetDragY > 0 ? "none" : `transform 0.42s ${spring}, visibility 0s ${visible ? "0s" : "0.42s"}`,
+          maxWidth:430, left:"50%", marginLeft:-215,
+        }}>
         <div style={{
           position:"absolute", top:0, left:0, right:0, zIndex:10, padding:"14px 16px",
           display:"flex", alignItems:"center", gap:12,
