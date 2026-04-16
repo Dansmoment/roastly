@@ -212,7 +212,13 @@ export default function App() {
           background: C.bg,
           borderBottom: `1px solid ${C.light}`,
         }}>
-          <div onClick={() => { setSlideDir("left"); setTab("search"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+          <div onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              if (tab !== "search") {
+                setSlideDir(TAB_ORDER.indexOf("search") < TAB_ORDER.indexOf(tab) ? "left" : "right");
+                setTab("search");
+              }
+            }}
             style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
             <RoastlyLogo size={30}/>
             <span style={{ fontFamily: FONT_SERIF, fontWeight: 700, fontSize: 22, color: C.primary, letterSpacing: "-0.3px" }}>

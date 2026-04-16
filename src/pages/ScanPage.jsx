@@ -30,13 +30,13 @@ const FULLSCREEN = {
 function BackButton({ onBack }) {
   return (
     <button onClick={onBack} style={{
-      position: "absolute", top: 52, left: 20, zIndex: 210,
-      background: "rgba(255,255,255,0.15)", border: "none", borderRadius: 99,
-      width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
-      cursor: "pointer", backdropFilter: "blur(8px)",
+      position: "fixed", top: 52, left: 20, zIndex: 220,
+      background: "rgba(0,0,0,0.5)", border: "none", borderRadius: 99,
+      width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+      cursor: "pointer", backdropFilter: "blur(10px)",
     }}>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
-        <polyline points="15 18 9 12 15 6"/>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
       </svg>
     </button>
   );
