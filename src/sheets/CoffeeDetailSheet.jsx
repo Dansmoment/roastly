@@ -35,7 +35,7 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
           setRated(false);
         });
       } else {
-        setIsFav(false);
+        setIsFav(api.isLocalFavorite(coffee.id));
         setMyRating(0);
         setRated(false);
       }
@@ -45,7 +45,12 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
   const handleScroll = () => { if (scrollRef.current) setScrollY(scrollRef.current.scrollTop); };
 
   const handleFavorite = async () => {
-    if (!user || !coffee) return;
+    if (!coffee) return;
+    if (!user) {
+      const next = api.toggleLocalFavorite(coffee.id);
+      setIsFav(next);
+      return;
+    }
     try {
       if (isFav) { await api.removeFavorite(user.id, coffee.id); setIsFav(false); }
       else { await api.addFavorite(user.id, coffee.id); setIsFav(true); }
@@ -193,8 +198,13 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
 
             <Section title="Votre avis">
               <div style={{ textAlign:"center", padding:"8px 0" }}>
+                {!user && (
+                  <p style={{ color:C.muted, fontSize:13, marginBottom:12 }}>
+                    <span style={{ color:C.accent, fontWeight:600, cursor:"pointer" }} onClick={onClose}>Connectez-vous</span> pour noter ce café
+                  </p>
+                )}
                 <p style={{ color:C.muted, fontSize:13, marginBottom:16 }}>
-                  {rated ? "Votre note actuelle — cliquez pour modifier" : "Comment l'avez-vous trouvé ?"}
+                  {rated ? "Votre note actuelle — cliquez pour modifier" : user ? "Comment l'avez-vous trouvé ?" : ""}
                 </p>
                 <div style={{ display:"flex", justifyContent:"center", gap:10, marginBottom:16 }}>
                   {[1,2,3,4,5].map(s => (

@@ -28,7 +28,7 @@ const FULLSCREEN = {
 };
 
 export function ScanPage({ onFound, onNotFound, user }) {
-  const [phase, setPhase] = useState("intro"); // intro | scanning | found | not_found | error
+  const [phase, setPhase] = useState("intro"); // intro | scanning | loading | found | not_found | error
   const [logoVisible, setLogoVisible] = useState(false);
   const [foundCoffee, setFoundCoffee] = useState(null);
   const [lastEAN, setLastEAN] = useState("");
@@ -98,6 +98,7 @@ export function ScanPage({ onFound, onNotFound, user }) {
     if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
     await stopScanner();
     try {
+      setPhase("loading");
       const found = await api.lookupByEAN(ean);
       if (!mountedRef.current) return;
       if (found) {
@@ -282,6 +283,28 @@ export function ScanPage({ onFound, onNotFound, user }) {
             </p>
           )}
         </div>
+      </div>
+    );
+  }
+
+  // ── LOADING ───────────────────────────────────────────────────────────────
+  if (phase === "loading") {
+    return (
+      <div style={{
+        ...FULLSCREEN, background: C.primary,
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center", gap: 20,
+      }}>
+        <div style={{
+          width: 64, height: 64, borderRadius: "50%",
+          border: `3px solid rgba(255,255,255,0.15)`,
+          borderTop: `3px solid ${C.accent}`,
+          animation: "spin 0.8s linear infinite",
+        }}/>
+        <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 15, fontWeight: 600 }}>
+          Recherche en cours…
+        </p>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }

@@ -118,6 +118,33 @@ export async function addReview({ coffeeId, userId, rating, comment }) {
   return data;
 }
 
+// ─── Local Favorites (sans compte) ──────────────────────────────────────────
+
+const LOCAL_FAVS_KEY = 'roastly_local_favs';
+
+export function getLocalFavoriteIds() {
+  try { return JSON.parse(localStorage.getItem(LOCAL_FAVS_KEY) || '[]'); }
+  catch { return []; }
+}
+
+export function isLocalFavorite(coffeeId) {
+  return getLocalFavoriteIds().includes(coffeeId);
+}
+
+export function toggleLocalFavorite(coffeeId) {
+  const ids = getLocalFavoriteIds();
+  const next = ids.includes(coffeeId) ? ids.filter(id => id !== coffeeId) : [...ids, coffeeId];
+  localStorage.setItem(LOCAL_FAVS_KEY, JSON.stringify(next));
+  return !ids.includes(coffeeId);
+}
+
+export async function syncLocalFavoritesToSupabase(userId) {
+  const ids = getLocalFavoriteIds();
+  if (!ids.length) return;
+  await Promise.all(ids.map(coffeeId => addFavorite(userId, coffeeId)));
+  localStorage.removeItem(LOCAL_FAVS_KEY);
+}
+
 // ─── Favorites ──────────────────────────────────────────────────────────────
 
 export async function fetchFavorites(userId) {

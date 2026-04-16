@@ -103,7 +103,9 @@ export default function App() {
       setUser(session?.user || null);
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
+      const u = session?.user || null;
+      setUser(u);
+      if (u) api.syncLocalFavoritesToSupabase(u.id).catch(() => {});
     });
     return () => subscription.unsubscribe();
   }, []);
