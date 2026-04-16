@@ -73,10 +73,14 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
       setIsFav(next);
       return;
     }
+    const newFav = !isFav;
+    setIsFav(newFav); // optimistic update
     try {
-      if (isFav) { await api.removeFavorite(user.id, coffee.id); setIsFav(false); }
-      else { await api.addFavorite(user.id, coffee.id); setIsFav(true); }
-    } catch {}
+      if (newFav) await api.addFavorite(user.id, coffee.id);
+      else await api.removeFavorite(user.id, coffee.id);
+    } catch {
+      setIsFav(!newFav); // rollback on error
+    }
   };
 
   const handleRate = async () => {

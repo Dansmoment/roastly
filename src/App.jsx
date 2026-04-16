@@ -212,7 +212,8 @@ export default function App() {
           background: C.bg,
           borderBottom: `1px solid ${C.light}`,
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div onClick={() => { setSlideDir("left"); setTab("search"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+            style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
             <RoastlyLogo size={30}/>
             <span style={{ fontFamily: FONT_SERIF, fontWeight: 700, fontSize: 22, color: C.primary, letterSpacing: "-0.3px" }}>
               Roastly<span style={{ color: C.accent }}>.</span>
@@ -279,7 +280,8 @@ export default function App() {
                 <SearchPage coffees={coffees} onOpen={handleOpenCoffee} onNotFound={handleNotFound}/>
               )}
               {tab === "scan" && (
-                <ScanPage onFound={handleScanFound} onNotFound={handleNotFound} user={user}/>
+                <ScanPage onFound={handleScanFound} onNotFound={handleNotFound} user={user}
+                  onBack={() => { setSlideDir("left"); setTab("search"); }}/>
               )}
               {tab === "bag" && (
                 <CoffeeBagPage coffees={coffees} onOpen={handleOpenCoffee} user={user}/>

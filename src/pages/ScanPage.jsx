@@ -27,7 +27,22 @@ const FULLSCREEN = {
   overflow: "hidden",
 };
 
-export function ScanPage({ onFound, onNotFound, user }) {
+function BackButton({ onBack }) {
+  return (
+    <button onClick={onBack} style={{
+      position: "absolute", top: 52, left: 20, zIndex: 210,
+      background: "rgba(255,255,255,0.15)", border: "none", borderRadius: 99,
+      width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
+      cursor: "pointer", backdropFilter: "blur(8px)",
+    }}>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+  );
+}
+
+export function ScanPage({ onFound, onNotFound, onBack, user }) {
   const [phase, setPhase] = useState("intro"); // intro | scanning | loading | found | not_found | error
   const [logoVisible, setLogoVisible] = useState(false);
   const [foundCoffee, setFoundCoffee] = useState(null);
@@ -128,6 +143,7 @@ export function ScanPage({ onFound, onNotFound, user }) {
   if (phase === "intro") {
     return (
       <div style={{ ...FULLSCREEN, background: C.primary }}>
+        <BackButton onBack={onBack}/>
         {/* Ambient rings */}
         <div style={{
           position: "absolute", top: "50%", left: "50%",
@@ -200,6 +216,7 @@ export function ScanPage({ onFound, onNotFound, user }) {
   if (phase === "scanning" || phase === "error") {
     return (
       <div style={{ ...FULLSCREEN, background: "#000" }}>
+        <BackButton onBack={() => { stopScanner(); onBack(); }}/>
         {/* Camera div — html5-qrcode injects video here */}
         <div
           id={scannerId}
@@ -295,6 +312,7 @@ export function ScanPage({ onFound, onNotFound, user }) {
         display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center", gap: 20,
       }}>
+        <BackButton onBack={onBack}/>
         <div style={{
           width: 64, height: 64, borderRadius: "50%",
           border: `3px solid rgba(255,255,255,0.15)`,
