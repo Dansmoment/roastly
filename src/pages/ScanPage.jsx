@@ -319,6 +319,12 @@ export function ScanPage({ onFound, onNotFound, user }) {
         alignItems: "center", justifyContent: "center",
         padding: "0 32px",
       }}>
+        {/* Flash vert au scan réussi */}
+        <div style={{
+          position: "absolute", inset: 0, zIndex: 10, pointerEvents: "none",
+          background: "rgba(60,220,100,0.45)",
+          animation: "flashFade 0.55s ease forwards",
+        }}/>
         {/* Success checkmark */}
         <div style={{
           width: 64, height: 64, borderRadius: "50%",

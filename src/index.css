@@ -130,3 +130,9 @@ input::placeholder, textarea::placeholder {
 
 .page-slide-right { animation: pageSlideInRight 0.28s cubic-bezier(0.4,0,0.2,1) both; }
 .page-slide-left  { animation: pageSlideInLeft  0.28s cubic-bezier(0.4,0,0.2,1) both; }
+
+@keyframes flashFade {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.4; }
+  100% { opacity: 0; }
+}

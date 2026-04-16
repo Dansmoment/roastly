@@ -234,20 +234,24 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
                   {rated ? "Votre note actuelle — cliquez pour modifier" : user ? "Comment l'avez-vous trouvé ?" : ""}
                 </p>
                 <div style={{ display:"flex", justifyContent:"center", gap:10, marginBottom:16 }}>
-                  {[1,2,3,4,5].map(s => (
-                    <button key={s}
-                      onMouseEnter={() => setHoverStar(s)} onMouseLeave={() => setHoverStar(0)}
-                      onClick={() => { setMyRating(s); setRated(false); }}
-                      style={{ background:"none", border:"none", cursor:"pointer", padding:2,
-                        transform: (hoverStar || myRating) >= s ? "scale(1.25)" : "scale(1)",
-                        transition:`transform 0.15s ${spring}` }}>
-                      <svg width="30" height="30" viewBox="0 0 24 24"
-                        fill={(hoverStar || myRating) >= s ? C.accent : C.light}
-                        style={{ transition:"fill 0.15s" }}>
-                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-                      </svg>
-                    </button>
-                  ))}
+                  {[1,2,3,4,5].map((s, i) => {
+                    const filled = (hoverStar || myRating) >= s;
+                    const cascadeDelay = !hoverStar && myRating >= s ? `${i * 55}ms` : "0ms";
+                    return (
+                      <button key={s}
+                        onMouseEnter={() => setHoverStar(s)} onMouseLeave={() => setHoverStar(0)}
+                        onClick={() => { setMyRating(s); setRated(false); }}
+                        style={{ background:"none", border:"none", cursor:"pointer", padding:2,
+                          transform: filled ? "scale(1.28)" : "scale(1)",
+                          transition:`transform 0.2s ${spring} ${cascadeDelay}` }}>
+                        <svg width="30" height="30" viewBox="0 0 24 24"
+                          fill={filled ? C.accent : C.light}
+                          style={{ transition:`fill 0.18s ease ${cascadeDelay}` }}>
+                          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                        </svg>
+                      </button>
+                    );
+                  })}
                 </div>
                 {!rated && myRating > 0 && (
                   <button onClick={handleRate} disabled={submitting} style={{
