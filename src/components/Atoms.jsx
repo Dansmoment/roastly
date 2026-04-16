@@ -1,6 +1,37 @@
 import { useState, useEffect, useRef } from 'react';
 import { C, FONT_SERIF, FONT_SANS, ease, spring } from '../lib/constants';
 
+const shimmerStyle = {
+  background: `linear-gradient(90deg, ${C.light} 25%, #F0E5D2 50%, ${C.light} 75%)`,
+  backgroundSize: "200% 100%",
+  animation: "shimmer 1.5s ease-in-out infinite",
+  borderRadius: 8,
+};
+
+export function SkeletonCard() {
+  return (
+    <div style={{ display:"flex", gap:16, alignItems:"center", padding:"18px 0", borderBottom:`1px solid ${C.light}` }}>
+      <div style={{ width:54, height:54, borderRadius:18, flexShrink:0, ...shimmerStyle }}/>
+      <div style={{ flex:1 }}>
+        <div style={{ height:15, width:"60%", marginBottom:8, ...shimmerStyle }}/>
+        <div style={{ height:11, width:"40%", marginBottom:10, ...shimmerStyle }}/>
+        <div style={{ display:"flex", gap:5 }}>
+          <div style={{ height:20, width:52, borderRadius:99, ...shimmerStyle }}/>
+          <div style={{ height:20, width:40, borderRadius:99, ...shimmerStyle }}/>
+        </div>
+      </div>
+      <div style={{ flexShrink:0, display:"flex", flexDirection:"column", alignItems:"flex-end", gap:6 }}>
+        <div style={{ height:24, width:28, borderRadius:6, ...shimmerStyle }}/>
+        <div style={{ height:10, width:46, borderRadius:99, ...shimmerStyle }}/>
+      </div>
+    </div>
+  );
+}
+
+export function SkeletonList({ count = 7 }) {
+  return <>{Array.from({ length: count }, (_, i) => <SkeletonCard key={i}/>)}</>;
+}
+
 export function useInView(threshold = 0.08) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);

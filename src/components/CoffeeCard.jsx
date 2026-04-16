@@ -4,18 +4,16 @@ import { FadeIn, Stars, Pill } from './Atoms';
 
 export function CoffeeCard({ coffee, onOpen, index = 0 }) {
   const [pressed, setPressed] = useState(false);
+  const press = { onMouseDown:() => setPressed(true), onMouseUp:() => setPressed(false), onMouseLeave:() => setPressed(false), onTouchStart:() => setPressed(true), onTouchEnd:() => setPressed(false), onTouchCancel:() => setPressed(false) };
   return (
     <FadeIn delay={index * 55}>
-      <div onClick={() => onOpen(coffee)}
-        onMouseDown={() => setPressed(true)} onMouseUp={() => setPressed(false)}
-        onMouseLeave={() => setPressed(false)}
+      <div onClick={() => onOpen(coffee)} {...press}
         style={{
           display:"flex", gap:16, alignItems:"center",
           padding:"18px 0", borderBottom:`1px solid ${C.light}`,
           cursor:"pointer",
-          opacity: pressed ? 0.65 : 1,
-          transform: pressed ? "translateX(6px)" : "translateX(0)",
-          transition:`opacity 0.14s, transform 0.18s ${spring}`,
+          transform: pressed ? "scale(0.97)" : "scale(1)",
+          transition:`transform 0.18s ${spring}`,
         }}>
         <div style={{ width:54, height:54, borderRadius:18, flexShrink:0,
           background:`linear-gradient(145deg, ${coffee.gradient[0]}, ${coffee.gradient[1]})`,

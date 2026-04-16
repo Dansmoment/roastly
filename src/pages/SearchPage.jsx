@@ -78,14 +78,27 @@ export function SearchPage({ coffees, onOpen, onNotFound }) {
       {filtered.length > 0 ? (
         filtered.map((c, i) => <CoffeeCard key={c.id} coffee={c} onOpen={onOpen} index={i}/>)
       ) : (
-        <div style={{ textAlign:"center", padding:"40px 20px" }}>
-          <p style={{ fontSize:40, marginBottom:12 }}>🔍</p>
-          <p style={{ color:C.dark, fontWeight:600, fontSize:19, fontFamily:FONT_SERIF, marginBottom:6 }}>Aucun résultat</p>
-          <p style={{ color:C.muted, fontSize:13, marginBottom:20 }}>Ce café n'est peut-être pas encore référencé.</p>
+        <div style={{ textAlign:"center", padding:"52px 24px 40px" }}>
+          <div style={{ width:88, height:88, borderRadius:"50%", background:C.light,
+            display:"flex", alignItems:"center", justifyContent:"center",
+            margin:"0 auto 20px", fontSize:44 }}>
+            ☕
+          </div>
+          <p style={{ color:C.dark, fontWeight:700, fontSize:20, fontFamily:FONT_SERIF, margin:"0 0 8px", letterSpacing:-0.2 }}>
+            {query ? `"${query}" introuvable` : "Aucun café trouvé"}
+          </p>
+          <p style={{ color:C.muted, fontSize:13, lineHeight:1.6, margin:"0 auto 24px", maxWidth:240 }}>
+            {query
+              ? "Ce café n'est peut-être pas encore référencé. Aidez la communauté en l'ajoutant !"
+              : "Essayez un autre filtre ou ajoutez un café."}
+          </p>
           <button onClick={onNotFound} style={{
             background:C.primary, color:"white", border:"none", borderRadius:99,
-            padding:"11px 24px", fontSize:14, fontWeight:600, cursor:"pointer",
-          }}>Ajouter ce café +</button>
+            padding:"12px 28px", fontSize:14, fontWeight:600, cursor:"pointer",
+            boxShadow:`0 6px 20px ${C.primary}40`,
+          }}>
+            {query ? `Ajouter "${query}" +` : "Ajouter un café +"}
+          </button>
         </div>
       )}
     </div>

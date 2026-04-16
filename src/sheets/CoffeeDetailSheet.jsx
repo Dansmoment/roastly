@@ -11,6 +11,7 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
   const [hoverStar, setHoverStar] = useState(0);
   const [rated, setRated] = useState(false);
   const [isFav, setIsFav] = useState(false);
+  const [favAnim, setFavAnim] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -46,6 +47,8 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
 
   const handleFavorite = async () => {
     if (!coffee) return;
+    setFavAnim(true);
+    setTimeout(() => setFavAnim(false), 380);
     if (!user) {
       const next = api.toggleLocalFavorite(coffee.id);
       setIsFav(next);
@@ -243,7 +246,8 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
           <button onClick={handleFavorite} style={{ width:"100%", background: isFav ? C.accent : C.primary, color:"white", border:"none",
             borderRadius:16, padding:"15px 20px", fontSize:15, fontWeight:700, cursor:"pointer",
             boxShadow:`0 8px 24px ${isFav ? C.accent : C.primary}55`, pointerEvents:"auto",
-            transition:`all 0.25s ${ease}`,
+            transition:`background 0.25s ${ease}, box-shadow 0.25s ${ease}`,
+            animation: favAnim ? "heartPulse 0.38s cubic-bezier(0.34,1.2,0.64,1)" : "none",
           }}>{isFav ? "Retirer des favoris 💔" : "Ajouter à ma liste ❤️"}</button>
         </div>
       </div>

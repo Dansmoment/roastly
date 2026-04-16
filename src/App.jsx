@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { C, FONT_SERIF, FONT_SANS, ease, spring } from './lib/constants';
 import { supabase } from './lib/supabase';
 import * as api from './lib/api';
@@ -10,6 +10,9 @@ import { NotFoundSheet } from './sheets/NotFoundSheet';
 import { AuthSheet } from './sheets/AuthSheet';
 import { SettingsSheet, HelpSheet, AboutSheet, ProfileMenuSheet } from './sheets/UtilitySheets';
 import { SplashScreen } from './components/SplashScreen';
+import { SkeletonList } from './components/Atoms';
+
+const TAB_ORDER = ["search", "scan", "bag"];
 
 const TABS = [
   { id: "search", label: "Rechercher", icon: "search" },
@@ -82,6 +85,7 @@ function TabIcon({ type, active }) {
 export default function App() {
   const [splash, setSplash] = useState(true);
   const [tab, setTab] = useState("search");
+  const [slideDir, setSlideDir] = useState("right");
   const [user, setUser] = useState(null);
   const [coffees, setCoffees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -205,12 +209,9 @@ export default function App() {
         {/* Content area */}
         <div style={{ padding: "0 16px", paddingBottom: 100 }}>
           {loading ? (
-            <div style={{ textAlign: "center", padding: "80px 0" }}>
-              <div style={{ fontSize: 48, marginBottom: 16, animation: "spin 1.5s linear infinite" }}>☕</div>
-              <p style={{ color: C.muted, fontSize: 14 }}>Chargement des cafés...</p>
-            </div>
+            <SkeletonList count={7}/>
           ) : (
-            <>
+            <div key={tab} className={`page-slide-${slideDir}`}>
               {tab === "search" && (
                 <SearchPage coffees={coffees} onOpen={handleOpenCoffee} onNotFound={handleNotFound}/>
               )}
@@ -220,7 +221,7 @@ export default function App() {
               {tab === "bag" && (
                 <CoffeeBagPage coffees={coffees} onOpen={handleOpenCoffee} user={user}/>
               )}
-            </>
+            </div>
           )}
         </div>
 
@@ -236,8 +237,18 @@ export default function App() {
           {TABS.map(t => {
             const active = tab === t.id;
             const isScan = t.id === "scan";
+            const handleTabClick = () => {
+              if (t.id === tab) {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+              }
+              const oldIdx = TAB_ORDER.indexOf(tab);
+              const newIdx = TAB_ORDER.indexOf(t.id);
+              setSlideDir(newIdx > oldIdx ? "right" : "left");
+              setTab(t.id);
+            };
             return (
-              <button key={t.id} onClick={() => setTab(t.id)} style={{
+              <button key={t.id} onClick={handleTabClick} style={{
                 background: isScan
                   ? (active ? C.primary : C.accent)
                   : "transparent",
