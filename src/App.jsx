@@ -190,23 +190,6 @@ export default function App() {
       {/* ── Splash screen ────────────────────────────────────────────── */}
       {splash && <SplashScreen onDone={() => setSplash(false)} />}
 
-      {/* ── Bouton fermer scanner — hors de tout containing block transformé ── */}
-      {tab === "scan" && !splash && (
-        <button
-          onClick={() => { setSlideDir("left"); setTab("search"); }}
-          style={{
-            position: "fixed", top: 48, left: 20, zIndex: 500,
-            background: "rgba(0,0,0,0.55)", border: "none", borderRadius: "50%",
-            width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center",
-            cursor: "pointer", backdropFilter: "blur(10px)",
-          }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      )}
-
       {/* ── App shell ────────────────────────────────────────────────── */}
       {/* Dim overlay during splash — does NOT use filter (would break position:fixed children) */}
       {splash && (

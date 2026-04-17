@@ -1,4 +1,4 @@
-const CACHE_NAME = 'roastly-v3';
+const CACHE_NAME = 'roastly-v2';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
