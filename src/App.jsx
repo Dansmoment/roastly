@@ -159,6 +159,23 @@ export default function App() {
       {/* ── Splash screen ────────────────────────────────────────────── */}
       {splash && <SplashScreen onDone={() => setSplash(false)} />}
 
+      {/* ── Bouton × scanner — rendu hors de tout containing block transformé ── */}
+      {tab === "scan" && !splash && (
+        <button
+          onClick={() => { setSlideDir("left"); setTab("search"); }}
+          style={{
+            position: "fixed", top: 52, left: 20, zIndex: 500,
+            background: "rgba(0,0,0,0.55)", border: "none", borderRadius: "50%",
+            width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
+            cursor: "pointer", backdropFilter: "blur(10px)",
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      )}
+
       {/* ── App shell ────────────────────────────────────────────────── */}
       {/* Dim overlay during splash — does NOT use filter (would break position:fixed children) */}
       {splash && (
@@ -181,7 +198,11 @@ export default function App() {
           background: C.bg,
           borderBottom: `1px solid ${C.light}`,
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div onClick={() => {
+              if (tab === "search") { window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+              setSlideDir(TAB_ORDER.indexOf("search") < TAB_ORDER.indexOf(tab) ? "left" : "right");
+              setTab("search");
+            }} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
             <RoastlyLogo size={30}/>
             <span style={{ fontFamily: FONT_SERIF, fontWeight: 700, fontSize: 22, color: C.primary, letterSpacing: "-0.3px" }}>
               Roastly<span style={{ color: C.accent }}>.</span>
