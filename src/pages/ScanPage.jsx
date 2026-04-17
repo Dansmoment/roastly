@@ -295,7 +295,6 @@ export function ScanPage({ onFound, onNotFound, onBack, user }) {
         display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center", gap: 20,
       }}>
-        <BackButton onBack={onBack}/>
         <div style={{
           width: 64, height: 64, borderRadius: "50%",
           border: `3px solid rgba(255,255,255,0.15)`,
