@@ -146,42 +146,23 @@ export function Toggle({ on, onToggle }) {
 }
 
 export function Sheet({ visible, onClose, children, maxH = "85vh" }) {
-  const [dragY, setDragY] = useState(0);
-  const startY = useRef(null);
-  const dragging = dragY > 0;
-
-  const onTouchStart = (e) => { startY.current = e.touches[0].clientY; };
-  const onTouchMove = (e) => {
-    if (startY.current === null) return;
-    const delta = e.touches[0].clientY - startY.current;
-    if (delta > 0) setDragY(delta);
-  };
-  const onTouchEnd = () => {
-    if (dragY > 90) onClose();
-    setDragY(0);
-    startY.current = null;
-  };
-
   return (
     <>
       <div onClick={onClose} style={{
         position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", zIndex:400,
-        opacity: visible ? Math.max(0, 1 - dragY / 250) : 0,
-        pointerEvents: visible ? "auto" : "none",
-        transition: dragging ? "none" : `opacity 0.25s ${ease}`,
+        opacity: visible ? 1 : 0, pointerEvents: visible ? "auto" : "none",
+        transition:`opacity 0.25s ${ease}`,
       }}/>
-      <div
-        onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
-        style={{
-          position:"fixed", bottom:0, left:"50%",
-          transform:`translateX(-50%) translateY(${visible ? dragY + "px" : "110%"})`,
-          visibility: visible ? "visible" : "hidden",
-          width:"100%", maxWidth:430, zIndex:401, background:C.bg,
-          borderRadius:"28px 28px 0 0", padding:"24px 22px 40px",
-          transition: dragging ? "none" : `transform 0.38s ${spring}, visibility 0s ${visible ? "0s" : "0.38s"}`,
-          maxHeight:maxH, overflowY:"auto",
-          boxShadow:"0 -8px 40px rgba(0,0,0,0.18)",
-        }}>
+      <div style={{
+        position:"fixed", bottom:0, left:"50%",
+        transform:`translateX(-50%) translateY(${visible ? "0" : "110%"})`,
+        visibility: visible ? "visible" : "hidden",
+        width:"100%", maxWidth:430, zIndex:401, background:C.bg,
+        borderRadius:"28px 28px 0 0", padding:"24px 22px 40px",
+        transition:`transform 0.38s ${spring}, visibility 0s ${visible ? "0s" : "0.38s"}`,
+        maxHeight:maxH, overflowY:"auto",
+        boxShadow:"0 -8px 40px rgba(0,0,0,0.18)",
+      }}>
         <div style={{ width:36, height:4, background:C.light, borderRadius:99, margin:"0 auto 22px" }}/>
         {children}
       </div>

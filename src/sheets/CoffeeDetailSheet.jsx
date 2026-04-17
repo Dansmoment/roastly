@@ -7,9 +7,6 @@ import * as api from '../lib/api';
 export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
   const scrollRef = useRef(null);
   const [scrollY, setScrollY] = useState(0);
-  const [sheetDragY, setSheetDragY] = useState(0);
-  const touchStartY = useRef(null);
-  const touchStartScroll = useRef(0);
   const [myRating, setMyRating] = useState(0);
   const [hoverStar, setHoverStar] = useState(0);
   const [rated, setRated] = useState(false);
@@ -48,22 +45,6 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
 
   const handleScroll = () => { if (scrollRef.current) setScrollY(scrollRef.current.scrollTop); };
 
-  const handleSheetTouchStart = (e) => {
-    touchStartY.current = e.touches[0].clientY;
-    touchStartScroll.current = scrollRef.current?.scrollTop || 0;
-  };
-  const handleSheetTouchMove = (e) => {
-    if (touchStartY.current === null) return;
-    if (touchStartScroll.current > 2) return;
-    const delta = e.touches[0].clientY - touchStartY.current;
-    if (delta > 0) setSheetDragY(delta);
-  };
-  const handleSheetTouchEnd = () => {
-    if (sheetDragY > 110) { setSheetDragY(0); onClose(); }
-    else setSheetDragY(0);
-    touchStartY.current = null;
-  };
-
   const handleFavorite = async () => {
     if (!coffee) return;
     setFavAnim(true);
@@ -73,14 +54,10 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
       setIsFav(next);
       return;
     }
-    const newFav = !isFav;
-    setIsFav(newFav); // optimistic update
     try {
-      if (newFav) await api.addFavorite(user.id, coffee.id);
-      else await api.removeFavorite(user.id, coffee.id);
-    } catch {
-      setIsFav(!newFav); // rollback on error
-    }
+      if (isFav) { await api.removeFavorite(user.id, coffee.id); setIsFav(false); }
+      else { await api.addFavorite(user.id, coffee.id); setIsFav(true); }
+    } catch {}
   };
 
   const handleRate = async () => {
@@ -109,21 +86,16 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
     <>
       <div onClick={onClose} style={{
         position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", zIndex:200,
-        opacity: visible ? Math.max(0, 1 - sheetDragY / 300) : 0,
-        pointerEvents: visible ? "auto" : "none",
-        transition: sheetDragY > 0 ? "none" : `opacity 0.3s ${ease}`,
+        opacity: visible ? 1 : 0, pointerEvents: visible ? "auto" : "none",
+        transition:`opacity 0.3s ${ease}`,
       }}/>
-      <div
-        onTouchStart={handleSheetTouchStart}
-        onTouchMove={handleSheetTouchMove}
-        onTouchEnd={handleSheetTouchEnd}
-        style={{
-          position:"fixed", inset:0, zIndex:201, display:"flex", flexDirection:"column",
-          transform: visible ? `translateY(${sheetDragY}px)` : "translateY(102%)",
-          visibility: visible ? "visible" : "hidden",
-          transition: sheetDragY > 0 ? "none" : `transform 0.42s ${spring}, visibility 0s ${visible ? "0s" : "0.42s"}`,
-          maxWidth:430, left:"50%", marginLeft:-215,
-        }}>
+      <div style={{
+        position:"fixed", inset:0, zIndex:201, display:"flex", flexDirection:"column",
+        transform: visible ? "translateY(0)" : "translateY(102%)",
+        visibility: visible ? "visible" : "hidden",
+        transition:`transform 0.42s ${spring}, visibility 0s ${visible ? "0s" : "0.42s"}`,
+        maxWidth:430, left:"50%", marginLeft:-215,
+      }}>
         <div style={{
           position:"absolute", top:0, left:0, right:0, zIndex:10, padding:"14px 16px",
           display:"flex", alignItems:"center", gap:12,
@@ -238,24 +210,20 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
                   {rated ? "Votre note actuelle — cliquez pour modifier" : user ? "Comment l'avez-vous trouvé ?" : ""}
                 </p>
                 <div style={{ display:"flex", justifyContent:"center", gap:10, marginBottom:16 }}>
-                  {[1,2,3,4,5].map((s, i) => {
-                    const filled = (hoverStar || myRating) >= s;
-                    const cascadeDelay = !hoverStar && myRating >= s ? `${i * 55}ms` : "0ms";
-                    return (
-                      <button key={s}
-                        onMouseEnter={() => setHoverStar(s)} onMouseLeave={() => setHoverStar(0)}
-                        onClick={() => { setMyRating(s); setRated(false); }}
-                        style={{ background:"none", border:"none", cursor:"pointer", padding:2,
-                          transform: filled ? "scale(1.28)" : "scale(1)",
-                          transition:`transform 0.2s ${spring} ${cascadeDelay}` }}>
-                        <svg width="30" height="30" viewBox="0 0 24 24"
-                          fill={filled ? C.accent : C.light}
-                          style={{ transition:`fill 0.18s ease ${cascadeDelay}` }}>
-                          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-                        </svg>
-                      </button>
-                    );
-                  })}
+                  {[1,2,3,4,5].map(s => (
+                    <button key={s}
+                      onMouseEnter={() => setHoverStar(s)} onMouseLeave={() => setHoverStar(0)}
+                      onClick={() => { setMyRating(s); setRated(false); }}
+                      style={{ background:"none", border:"none", cursor:"pointer", padding:2,
+                        transform: (hoverStar || myRating) >= s ? "scale(1.25)" : "scale(1)",
+                        transition:`transform 0.15s ${spring}` }}>
+                      <svg width="30" height="30" viewBox="0 0 24 24"
+                        fill={(hoverStar || myRating) >= s ? C.accent : C.light}
+                        style={{ transition:"fill 0.15s" }}>
+                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                      </svg>
+                    </button>
+                  ))}
                 </div>
                 {!rated && myRating > 0 && (
                   <button onClick={handleRate} disabled={submitting} style={{

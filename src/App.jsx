@@ -89,10 +89,6 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [coffees, setCoffees] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [pullY, setPullY] = useState(0);
-  const [refreshing, setRefreshing] = useState(false);
-  const pullStartY = useRef(null);
-  const PULL_THRESHOLD = 80;
 
   // Sheets
   const [detailCoffee, setDetailCoffee] = useState(null);
@@ -158,33 +154,6 @@ export default function App() {
     setUser(u);
   }, []);
 
-  const handleRefresh = useCallback(async () => {
-    setRefreshing(true);
-    try {
-      const data = await api.fetchCoffees();
-      setCoffees(data || []);
-    } catch {}
-    setRefreshing(false);
-  }, []);
-
-  const anySheetOpen = !!(detailCoffee || showNotFound || showAuth || showSettings || showHelp || showAbout || showProfileMenu);
-
-  const onPullStart = (e) => {
-    if (window.scrollY < 2 && !anySheetOpen && !refreshing && tab !== "scan") {
-      pullStartY.current = e.touches[0].clientY;
-    }
-  };
-  const onPullMove = (e) => {
-    if (pullStartY.current === null) return;
-    const delta = e.touches[0].clientY - pullStartY.current;
-    if (delta > 0) setPullY(Math.min(delta * 0.45, PULL_THRESHOLD + 30));
-  };
-  const onPullEnd = () => {
-    if (pullY >= PULL_THRESHOLD) handleRefresh();
-    setPullY(0);
-    pullStartY.current = null;
-  };
-
   return (
     <>
       {/* ── Splash screen ────────────────────────────────────────────── */}
@@ -212,14 +181,7 @@ export default function App() {
           background: C.bg,
           borderBottom: `1px solid ${C.light}`,
         }}>
-          <div onClick={() => {
-              window.scrollTo({ top: 0, behavior: "smooth" });
-              if (tab !== "search") {
-                setSlideDir(TAB_ORDER.indexOf("search") < TAB_ORDER.indexOf(tab) ? "left" : "right");
-                setTab("search");
-              }
-            }}
-            style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <RoastlyLogo size={30}/>
             <span style={{ fontFamily: FONT_SERIF, fontWeight: 700, fontSize: 22, color: C.primary, letterSpacing: "-0.3px" }}>
               Roastly<span style={{ color: C.accent }}>.</span>
@@ -244,40 +206,8 @@ export default function App() {
           </div>
         </div>
 
-        {/* Pull-to-refresh indicator */}
-        {(pullY > 0 || refreshing) && (
-          <div style={{
-            position: "fixed", top: 62, left: "50%",
-            transform: `translateX(-50%) translateY(${refreshing ? 0 : Math.max(0, pullY - 20)}px)`,
-            transition: pullY > 0 ? "none" : `transform 0.3s ${spring}`,
-            zIndex: 99, pointerEvents: "none",
-          }}>
-            <div style={{
-              background: C.white, borderRadius: 99,
-              padding: "8px 18px", display: "flex", alignItems: "center", gap: 8,
-              boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
-            }}>
-              <span style={{
-                fontSize: 18, display: "inline-block",
-                animation: refreshing ? "spin 0.7s linear infinite" : "none",
-                transform: refreshing ? undefined : `rotate(${Math.min(pullY * 2.5, 180)}deg)`,
-                transition: "transform 0.1s",
-              }}>☕</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: C.muted, whiteSpace: "nowrap" }}>
-                {refreshing ? "Actualisation…" : pullY >= PULL_THRESHOLD ? "Libérer !" : "Tirer pour actualiser"}
-              </span>
-            </div>
-          </div>
-        )}
-
         {/* Content area */}
-        <div
-          onTouchStart={onPullStart} onTouchMove={onPullMove} onTouchEnd={onPullEnd}
-          style={{
-            padding: "0 16px", paddingBottom: 100,
-            transform: `translateY(${Math.min(pullY * 0.4, 32)}px)`,
-            transition: pullY > 0 ? "none" : `transform 0.3s ${spring}`,
-          }}>
+        <div style={{ padding: "0 16px", paddingBottom: 100 }}>
           {loading ? (
             <SkeletonList count={7}/>
           ) : (
@@ -286,8 +216,7 @@ export default function App() {
                 <SearchPage coffees={coffees} onOpen={handleOpenCoffee} onNotFound={handleNotFound}/>
               )}
               {tab === "scan" && (
-                <ScanPage onFound={handleScanFound} onNotFound={handleNotFound} user={user}
-                  onBack={() => { setSlideDir("left"); setTab("search"); }}/>
+                <ScanPage onFound={handleScanFound} onNotFound={handleNotFound} user={user}/>
               )}
               {tab === "bag" && (
                 <CoffeeBagPage coffees={coffees} onOpen={handleOpenCoffee} user={user}/>

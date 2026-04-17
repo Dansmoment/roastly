@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "roastly-dev",
+      "name": "roastly-live",
       "runtimeExecutable": "/usr/local/bin/npx",
-      "runtimeArgs": ["vite", "preview", "--port", "5173"],
-      "port": 5173
+      "runtimeArgs": ["vite", "--port", "5174"],
+      "port": 5174
     }
   ]
 }

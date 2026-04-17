@@ -27,22 +27,7 @@ const FULLSCREEN = {
   overflow: "hidden",
 };
 
-function BackButton({ onBack }) {
-  return (
-    <button onClick={onBack} style={{
-      position: "fixed", top: 52, left: 20, zIndex: 220,
-      background: "rgba(0,0,0,0.5)", border: "none", borderRadius: 99,
-      width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
-      cursor: "pointer", backdropFilter: "blur(10px)",
-    }}>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
-        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
-  );
-}
-
-export function ScanPage({ onFound, onNotFound, onBack, user }) {
+export function ScanPage({ onFound, onNotFound, user }) {
   const [phase, setPhase] = useState("intro"); // intro | scanning | loading | found | not_found | error
   const [logoVisible, setLogoVisible] = useState(false);
   const [foundCoffee, setFoundCoffee] = useState(null);
@@ -143,7 +128,6 @@ export function ScanPage({ onFound, onNotFound, onBack, user }) {
   if (phase === "intro") {
     return (
       <div style={{ ...FULLSCREEN, background: C.primary }}>
-        <BackButton onBack={onBack}/>
         {/* Ambient rings */}
         <div style={{
           position: "absolute", top: "50%", left: "50%",
@@ -216,7 +200,6 @@ export function ScanPage({ onFound, onNotFound, onBack, user }) {
   if (phase === "scanning" || phase === "error") {
     return (
       <div style={{ ...FULLSCREEN, background: "#000" }}>
-        <BackButton onBack={() => { stopScanner(); onBack(); }}/>
         {/* Camera div — html5-qrcode injects video here */}
         <div
           id={scannerId}
@@ -312,7 +295,6 @@ export function ScanPage({ onFound, onNotFound, onBack, user }) {
         display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center", gap: 20,
       }}>
-        <BackButton onBack={onBack}/>
         <div style={{
           width: 64, height: 64, borderRadius: "50%",
           border: `3px solid rgba(255,255,255,0.15)`,
@@ -337,12 +319,6 @@ export function ScanPage({ onFound, onNotFound, onBack, user }) {
         alignItems: "center", justifyContent: "center",
         padding: "0 32px",
       }}>
-        {/* Flash vert au scan réussi */}
-        <div style={{
-          position: "absolute", inset: 0, zIndex: 10, pointerEvents: "none",
-          background: "rgba(60,220,100,0.45)",
-          animation: "flashFade 0.55s ease forwards",
-        }}/>
         {/* Success checkmark */}
         <div style={{
           width: 64, height: 64, borderRadius: "50%",

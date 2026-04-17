@@ -81,7 +81,6 @@ function ProfilePage({ coffees, onOpen, user }) {
   const [stats, setStats] = useState({ favorites: 0, reviews: 0 });
   const [tasteProfile, setTasteProfile] = useState(null);
   const [scanHistory, setScanHistory] = useState([]);
-  const [favorites, setFavorites] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
   useEffect(() => {
@@ -89,20 +88,17 @@ function ProfilePage({ coffees, onOpen, user }) {
       setStats({ favorites: 0, reviews: 0 });
       setTasteProfile(null);
       setScanHistory([]);
-      // Local favorites for non-logged-in users
-      const localIds = api.getLocalFavoriteIds();
-      setFavorites(coffees.filter(c => localIds.includes(c.id)));
       return;
     }
+    // Load stats + taste profile + scan history in parallel
     api.fetchUserStats(user.id).then(setStats).catch(() => {});
     api.fetchUserTasteProfile(user.id).then(setTasteProfile).catch(() => {});
-    api.fetchFavorites(user.id).then(data => setFavorites(data || [])).catch(() => {});
     setLoadingHistory(true);
     api.fetchScanHistory(user.id)
       .then(data => setScanHistory(data || []))
       .catch(() => setScanHistory([]))
       .finally(() => setLoadingHistory(false));
-  }, [user, coffees]);
+  }, [user]);
 
   // Format relative time
   function relativeTime(dateStr) {
@@ -176,40 +172,6 @@ function ProfilePage({ coffees, onOpen, user }) {
         <div style={{ background:C.light, borderRadius:16, padding:"20px", textAlign:"center", marginBottom:28 }}>
           <p style={{ fontSize:28, marginBottom:8 }}>☕</p>
           <p style={{ color:C.muted, fontSize:13, margin:0 }}>Notez des cafés pour construire votre profil de goût</p>
-        </div>
-      )}
-
-      {/* Favorites list */}
-      <p style={{ color:C.dark, fontWeight:600, fontSize:19, fontFamily:FONT_SERIF, letterSpacing:-0.1, marginBottom:12 }}>❤️ Mes favoris</p>
-      {favorites.length === 0 ? (
-        <div style={{ background:C.light, borderRadius:16, padding:"20px", textAlign:"center", marginBottom:28 }}>
-          <p style={{ fontSize:28, marginBottom:8 }}>☕</p>
-          <p style={{ color:C.muted, fontSize:13, margin:0 }}>Ajoutez des cafés à votre liste depuis leur fiche</p>
-        </div>
-      ) : (
-        <div style={{ marginBottom:28 }}>
-          {favorites.filter(Boolean).map((c, i) => {
-            const g = c.gradient || [C.accent, C.copper];
-            return (
-              <FadeIn key={c.id || i} delay={i * 40}>
-                <div onClick={() => onOpen(c)} style={{
-                  display:"flex", alignItems:"center", gap:14,
-                  padding:"16px 0", borderBottom:`1px solid ${C.light}`, cursor:"pointer",
-                }}>
-                  <div style={{ width:50, height:50, borderRadius:16, flexShrink:0,
-                    background:`linear-gradient(135deg, ${g[0]}, ${g[1]})`,
-                    display:"flex", alignItems:"center", justifyContent:"center", fontSize:24,
-                    boxShadow:`0 4px 12px ${g[0]}44` }}>{c.emoji || "☕"}</div>
-                  <div style={{ flex:1, minWidth:0 }}>
-                    <p style={{ fontWeight:600, color:C.dark, fontSize:15, margin:"0 0 2px",
-                      fontFamily:FONT_SERIF, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{c.name}</p>
-                    <p style={{ color:C.muted, fontSize:12, margin:0 }}>{c.brand} · {c.origin_flag} {c.origin_country}</p>
-                  </div>
-                  <span style={{ color:C.accent, fontWeight:700, fontSize:18, fontFamily:FONT_SERIF, flexShrink:0 }}>{c.avg_rating || "—"}</span>
-                </div>
-              </FadeIn>
-            );
-          })}
         </div>
       )}
 
