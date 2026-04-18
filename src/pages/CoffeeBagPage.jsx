@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { C, FONT_SERIF, ease, spring, ARTICLES } from '../lib/constants';
-import { FadeIn, Pill } from '../components/Atoms';
+import { FadeIn } from '../components/Atoms';
+import { RadarChart } from '../components/Charts';
 import * as api from '../lib/api';
 
 export function CoffeeBagPage({ coffees, onOpen, user }) {
@@ -74,143 +75,327 @@ export function CoffeeBagPage({ coffees, onOpen, user }) {
   );
 }
 
+// ─── Archetypes ──────────────────────────────────────────────────────────────
+const ARCHETYPES = {
+  fruity: {
+    icon: "🫐", name: "L'Aventurier Fruité",
+    tagline: "Fruité · Acidité vive · Complexe",
+    desc: "Les terroirs d'altitude vous font vibrer. Vous cherchez la complexité aromatique et les notes de fruits rouges.",
+    grad: ["#8E3E63", "#2D1040"],
+  },
+  floral: {
+    icon: "🌸", name: "L'Explorateur Floral",
+    tagline: "Floral · Délicat · Aromatique",
+    desc: "Les cafés d'Éthiopie et du Panama vous enchantent. Votre palais est sensible aux arômes les plus subtils.",
+    grad: ["#7B4F9E", "#2D1B69"],
+  },
+  sweet: {
+    icon: "🍫", name: "L'Épicurien Doux",
+    tagline: "Douceur · Chocolat · Velouté",
+    desc: "Vous aimez les cafés ronds et généreux, aux notes de caramel et chocolat. Le réconfort dans la tasse.",
+    grad: ["#7A3E1E", "#C47A2A"],
+  },
+  bold: {
+    icon: "☕", name: "Le Puriste Espresso",
+    tagline: "Corps · Intense · Corsé",
+    desc: "Puissance et caractère. Vous appréciez les cafés qui ne laissent pas indifférent.",
+    grad: ["#1A0F07", "#3A2010"],
+  },
+  balanced: {
+    icon: "✨", name: "Le Connaisseur",
+    tagline: "Éclectique · Curieux · Nuancé",
+    desc: "Votre palais affûté apprécie toutes les nuances. Vous voyagez entre origines et styles sans frontières.",
+    grad: ["#0D3B6E", "#1A5C74"],
+  },
+};
+
+function computeArchetype(profile) {
+  if (!profile || profile.length === 0) return null;
+  const s = {};
+  profile.forEach(({ l, v }) => { s[l] = v; });
+  const floral = s['Floral'] || 0;
+  const fruity = (s['Fruité'] || 0) + (s['Acidité'] || 0) * 0.5;
+  const sweet = (s['Douceur'] || 0) + (s['Chocolat'] || 0) * 0.6;
+  const bold = s['Corps'] || 0;
+  const scores = { floral, fruity, sweet, bold };
+  const top = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
+  if (top[1] < 40) return ARCHETYPES.balanced;
+  return { floral: ARCHETYPES.floral, fruity: ARCHETYPES.fruity, sweet: ARCHETYPES.sweet, bold: ARCHETYPES.bold }[top[0]];
+}
+
+function shareProfile(name, archetype) {
+  const text = archetype
+    ? `Mon profil café sur Roastly. : ${archetype.icon} ${archetype.name}\n"${archetype.tagline}"\n\nDécouvre le tien sur roastly.app`
+    : `Je découvre mes préférences café sur Roastly.app`;
+  if (navigator.share) {
+    navigator.share({ title: 'Mon profil Roastly.', text }).catch(() => {});
+  } else {
+    navigator.clipboard?.writeText(text).then(() => alert('Profil copié !')).catch(() => {});
+  }
+}
+
+function YearCard({ year, found, reviews, countries }) {
+  return (
+    <div style={{ background: C.light, borderRadius: 20, padding: "18px 16px 16px", marginBottom: 16 }}>
+      <p style={{ color: C.muted, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1.2, margin: "0 0 12px" }}>
+        Votre {year} en cafés
+      </p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+        {[
+          { v: found, label: "Découverts", icon: "🫘", color: C.accent },
+          { v: countries, label: "Pays", icon: "🌍", color: "#2E7D32" },
+          { v: reviews, label: "Avis", icon: "⭐", color: "#5C6BC0" },
+        ].map((s, i) => (
+          <div key={i} style={{ background: C.white, borderRadius: 14, padding: "12px 6px", textAlign: "center" }}>
+            <p style={{ fontSize: 18, margin: "0 0 4px" }}>{s.icon}</p>
+            <p style={{ color: C.dark, fontWeight: 800, fontSize: 20, margin: "0 0 2px", fontFamily: FONT_SERIF }}>{s.v}</p>
+            <p style={{ color: C.muted, fontSize: 10, margin: 0, lineHeight: 1.3 }}>{s.label}</p>
+          </div>
+        ))}
+      </div>
+      {found === 0 && reviews === 0 && (
+        <p style={{ color: C.muted, fontSize: 12, textAlign: "center", margin: "12px 0 0", lineHeight: 1.5 }}>
+          Scannez votre premier café pour commencer votre aventure !
+        </p>
+      )}
+    </div>
+  );
+}
+
+function DNATeaser() {
+  const fakeData = [
+    { label: "Fruité", v: 72 }, { label: "Floral", v: 55 },
+    { label: "Acidité", v: 60 }, { label: "Corps", v: 38 }, { label: "Douceur", v: 65 },
+  ];
+  return (
+    <div style={{ background: C.white, borderRadius: 20, padding: "20px 18px", marginBottom: 16, textAlign: "center", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+      <p style={{ color: C.dark, fontSize: 15, fontWeight: 700, fontFamily: FONT_SERIF, margin: "0 0 6px" }}>Mon ADN café</p>
+      <p style={{ color: C.muted, fontSize: 12, margin: "0 0 16px", lineHeight: 1.5 }}>
+        Notez 3 cafés pour faire apparaître votre profil de goût
+      </p>
+      <div style={{ position: "relative", display: "inline-block" }}>
+        <div style={{ filter: "blur(5px)", opacity: 0.35 }}>
+          <RadarChart data={fakeData} size={160}/>
+        </div>
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ background: C.primary, borderRadius: 99, padding: "6px 18px" }}>
+            <p style={{ color: "white", fontSize: 12, fontWeight: 700, margin: 0 }}>À débloquer</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GuestTeaser() {
+  const preview = Object.values(ARCHETYPES);
+  return (
+    <div>
+      <div style={{ textAlign: "center", padding: "16px 0 20px" }}>
+        <div style={{ fontSize: 52, marginBottom: 14 }}>☕</div>
+        <p style={{ fontFamily: FONT_SERIF, fontSize: 26, fontWeight: 700, color: C.primary, margin: "0 0 8px", letterSpacing: -0.5 }}>
+          Quel type de café<br/>êtes-vous ?
+        </p>
+        <p style={{ color: C.muted, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
+          Scannez, notez, et découvrez votre profil de goût unique.
+        </p>
+      </div>
+
+      <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 10, marginBottom: 20, scrollbarWidth: "none" }}>
+        {preview.map((a, i) => (
+          <div key={i} style={{
+            flexShrink: 0, width: 130,
+            background: `linear-gradient(145deg, ${a.grad[0]}, ${a.grad[1]})`,
+            borderRadius: 18, padding: "16px 12px",
+          }}>
+            <p style={{ fontSize: 26, margin: "0 0 8px" }}>{a.icon}</p>
+            <p style={{ color: "white", fontWeight: 700, fontSize: 11, fontFamily: FONT_SERIF, margin: "0 0 4px", lineHeight: 1.3 }}>{a.name}</p>
+            <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 9, margin: 0, lineHeight: 1.3 }}>{a.tagline}</p>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ background: C.primary, borderRadius: 20, padding: "22px 20px", textAlign: "center" }}>
+        <p style={{ color: "white", fontWeight: 700, fontSize: 18, fontFamily: FONT_SERIF, margin: "0 0 6px" }}>
+          Créez votre profil café
+        </p>
+        <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, margin: "0 0 16px" }}>
+          Gratuit · 30 secondes · Sans engagement
+        </p>
+        <div style={{ background: C.accent, borderRadius: 99, padding: "13px 28px", display: "inline-block" }}>
+          <p style={{ color: "white", fontWeight: 700, fontSize: 14, margin: 0 }}>Commencer →</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ProfilePage({ coffees, onOpen, user }) {
-  const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || "Vous";
-  const userInitial = userName[0]?.toUpperCase() || "?";
+  const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || null;
+  const userInitial = userName?.[0]?.toUpperCase() || '?';
+  const currentYear = new Date().getFullYear();
 
   const [stats, setStats] = useState({ favorites: 0, reviews: 0 });
   const [tasteProfile, setTasteProfile] = useState(null);
   const [scanHistory, setScanHistory] = useState([]);
-  const [loadingHistory, setLoadingHistory] = useState(false);
 
   useEffect(() => {
-    if (!user) {
-      setStats({ favorites: 0, reviews: 0 });
-      setTasteProfile(null);
-      setScanHistory([]);
-      return;
-    }
-    // Load stats + taste profile + scan history in parallel
-    api.fetchUserStats(user.id).then(setStats).catch(() => {});
-    api.fetchUserTasteProfile(user.id).then(setTasteProfile).catch(() => {});
-    setLoadingHistory(true);
-    api.fetchScanHistory(user.id)
-      .then(data => setScanHistory(data || []))
-      .catch(() => setScanHistory([]))
-      .finally(() => setLoadingHistory(false));
+    if (!user) return;
+    Promise.all([
+      api.fetchUserStats(user.id).then(setStats).catch(() => {}),
+      api.fetchUserTasteProfile(user.id).then(setTasteProfile).catch(() => {}),
+      api.fetchScanHistory(user.id).then(d => setScanHistory(d || [])).catch(() => {}),
+    ]);
   }, [user]);
 
-  // Format relative time
-  function relativeTime(dateStr) {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const h = diff / 3600000;
-    if (h < 24) return "Aujourd'hui";
-    if (h < 48) return "Hier";
-    const d = Math.floor(h / 24);
-    if (d < 7) return `Il y a ${d}j`;
-    if (d < 30) return `Il y a ${Math.floor(d/7)} sem.`;
-    return `Il y a ${Math.floor(d/30)} mois`;
-  }
+  if (!user) return <GuestTeaser />;
 
-  // Build display for scan history items
-  const historyItems = scanHistory
-    .filter(s => s.coffees)
-    .slice(0, 5);
+  const archetype = computeArchetype(tasteProfile?.profile);
+  const grad = archetype?.grad || [C.primary, C.dark];
+  const radarData = tasteProfile?.profile?.map(p => ({ label: p.l, v: p.v })) || [];
+  const foundCoffees = scanHistory.filter(s => s.coffees);
+  const thisYearFound = scanHistory.filter(s =>
+    s.coffees && new Date(s.scanned_at || s.created_at).getFullYear() === currentYear
+  ).length;
+  const countries = new Set(scanHistory.map(s => s.coffees?.country).filter(Boolean));
 
   return (
     <div>
-      {/* Profile card */}
-      <div style={{ background:`linear-gradient(135deg, ${C.primary}, ${C.dark})`,
-        borderRadius:24, padding:"24px 20px", marginBottom:24, textAlign:"center" }}>
-        <div style={{ width:66, height:66, background:`linear-gradient(135deg, ${C.accent}, ${C.copper})`, borderRadius:"50%",
-          margin:"0 auto 12px", display:"flex", alignItems:"center", justifyContent:"center",
-          fontSize:28, fontWeight:800, color:"white", boxShadow:"0 4px 16px rgba(0,0,0,0.3)" }}>{userInitial}</div>
-        <p style={{ color:"white", fontWeight:600, fontSize:24, margin:"0 0 4px", fontFamily:FONT_SERIF }}>{userName}</p>
-        <p style={{ color:"rgba(255,255,255,0.5)", fontSize:12, margin:"0 0 20px" }}>Membre Roastly.</p>
-        <div style={{ display:"flex", justifyContent:"space-around" }}>
+      {/* ── Hero identity card ─────────────────────────────────────────── */}
+      <div style={{
+        background: `linear-gradient(145deg, ${grad[0]}, ${grad[1]})`,
+        borderRadius: 24, padding: "22px 20px 18px", marginBottom: 16,
+        position: "relative", overflow: "hidden",
+      }}>
+        <div style={{
+          position: "absolute", top: -50, right: -50, width: 160, height: 160,
+          borderRadius: "50%", background: "rgba(255,255,255,0.05)", pointerEvents: "none",
+        }}/>
+
+        {/* Avatar + name */}
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 18 }}>
+          <div style={{
+            width: 54, height: 54, borderRadius: "50%",
+            background: "rgba(255,255,255,0.15)", border: "2px solid rgba(255,255,255,0.25)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 20, fontWeight: 800, color: "white", flexShrink: 0,
+          }}>{userInitial}</div>
+          <div>
+            <p style={{ color: "white", fontWeight: 700, fontSize: 18, margin: "0 0 2px", fontFamily: FONT_SERIF }}>{userName || "Café lover"}</p>
+            <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, margin: 0 }}>Membre Roastly.</p>
+          </div>
+        </div>
+
+        {/* Archetype */}
+        {archetype ? (
+          <div style={{ marginBottom: 18 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
+              <span style={{ fontSize: 20 }}>{archetype.icon}</span>
+              <span style={{ color: "rgba(255,255,255,0.55)", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1.2 }}>{archetype.tagline}</span>
+            </div>
+            <p style={{ color: "white", fontWeight: 700, fontSize: 21, fontFamily: FONT_SERIF, margin: "0 0 7px", letterSpacing: -0.3 }}>{archetype.name}</p>
+            <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, margin: 0, lineHeight: 1.6 }}>{archetype.desc}</p>
+          </div>
+        ) : (
+          <div style={{ marginBottom: 18 }}>
+            <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, margin: 0, fontStyle: "italic" }}>
+              Notez des cafés pour révéler votre archétype...
+            </p>
+          </div>
+        )}
+
+        {/* Stats bar */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", background: "rgba(0,0,0,0.2)", borderRadius: 14, overflow: "hidden" }}>
           {[
-            { v: coffees.length, l:"Cafés" },
-            { v: stats.reviews, l:"Avis" },
-            { v: stats.favorites, l:"Favoris" },
-          ].map(s => (
-            <div key={s.l}>
-              <p style={{ color:"white", fontWeight:800, fontSize:22, margin:"0 0 2px" }}>{s.v}</p>
-              <p style={{ color:"rgba(255,255,255,0.5)", fontSize:12, margin:0 }}>{s.l}</p>
+            { v: stats.favorites, label: "Favoris" },
+            { v: stats.reviews,   label: "Avis" },
+            { v: countries.size,  label: "Pays" },
+          ].map((s, i) => (
+            <div key={i} style={{
+              textAlign: "center", padding: "10px 0",
+              borderRight: i < 2 ? "1px solid rgba(255,255,255,0.08)" : "none",
+            }}>
+              <p style={{ color: "white", fontWeight: 800, fontSize: 20, margin: "0 0 1px", fontFamily: FONT_SERIF }}>{s.v}</p>
+              <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, margin: 0 }}>{s.label}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Taste profile */}
-      <p style={{ color:C.dark, fontWeight:600, fontSize:19, fontFamily:FONT_SERIF, letterSpacing:-0.1, marginBottom:12 }}>🎯 Mon profil de goût</p>
-      {!user ? (
-        <div style={{ background:C.light, borderRadius:16, padding:"20px", textAlign:"center", marginBottom:28 }}>
-          <p style={{ color:C.muted, fontSize:13, margin:0 }}>Connectez-vous pour voir votre profil</p>
-        </div>
-      ) : tasteProfile && tasteProfile.profile.length > 0 ? (
-        <div style={{ marginBottom:28 }}>
-          {tasteProfile.profile.map((t, i) => (
-            <FadeIn key={t.l} delay={i * 50}>
-              <div style={{ marginBottom:18 }}>
-                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:7 }}>
-                  <span style={{ color:C.text, fontSize:15, fontFamily:FONT_SERIF, fontWeight:500 }}>{t.l}</span>
-                  <span style={{ color:C.accent, fontSize:13, fontWeight:600 }}>{t.v}%</span>
-                </div>
-                <div style={{ height:3, background:C.light, borderRadius:99, overflow:"hidden" }}>
-                  <div style={{ width:`${t.v}%`, height:"100%", borderRadius:99,
-                    background:`linear-gradient(90deg, ${C.primary}, ${C.accent})`, transition:"width 0.8s ease" }}/>
-                </div>
-              </div>
-            </FadeIn>
-          ))}
-          <p style={{ color:C.muted, fontSize:12, marginTop:8 }}>
-            Basé sur {tasteProfile.reviewCount} avis
-            {tasteProfile.topTags.length > 0 && ` · Vous aimez ${tasteProfile.topTags.join(", ")}`}
-          </p>
+      {/* ── Year in coffee ─────────────────────────────────────────────── */}
+      <YearCard year={currentYear} found={thisYearFound} reviews={stats.reviews} countries={countries.size} />
+
+      {/* ── ADN de goût ────────────────────────────────────────────────── */}
+      {radarData.length > 0 ? (
+        <div style={{ background: C.white, borderRadius: 20, padding: "18px", marginBottom: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
+            <p style={{ color: C.dark, fontSize: 15, fontWeight: 700, fontFamily: FONT_SERIF, margin: 0 }}>Mon ADN café</p>
+            {archetype && (
+              <span style={{ background: `${archetype.grad[0]}22`, color: archetype.grad[0], fontSize: 10, fontWeight: 700, borderRadius: 99, padding: "3px 10px" }}>
+                {archetype.icon} {archetype.name}
+              </span>
+            )}
+          </div>
+          <p style={{ color: C.muted, fontSize: 11, margin: "0 0 14px" }}>Basé sur {tasteProfile.reviewCount} avis</p>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <RadarChart data={radarData} size={190}/>
+          </div>
+          {tasteProfile.topTags.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginTop: 14 }}>
+              {tasteProfile.topTags.map((tag, i) => (
+                <span key={i} style={{
+                  background: `${C.accent}15`, color: C.accent, border: `1px solid ${C.accent}30`,
+                  borderRadius: 99, padding: "4px 12px", fontSize: 12, fontWeight: 600,
+                }}>{tag}</span>
+              ))}
+            </div>
+          )}
         </div>
       ) : (
-        <div style={{ background:C.light, borderRadius:16, padding:"20px", textAlign:"center", marginBottom:28 }}>
-          <p style={{ fontSize:28, marginBottom:8 }}>☕</p>
-          <p style={{ color:C.muted, fontSize:13, margin:0 }}>Notez des cafés pour construire votre profil de goût</p>
+        <DNATeaser />
+      )}
+
+      {/* ── Dernières découvertes ───────────────────────────────────────── */}
+      {foundCoffees.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <p style={{ color: C.dark, fontSize: 14, fontWeight: 700, fontFamily: FONT_SERIF, margin: "0 0 12px" }}>Dernières découvertes</p>
+          <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "none" }}>
+            {foundCoffees.slice(0, 8).map((s, i) => {
+              const c = s.coffees;
+              const g = c.gradient || [C.accent, C.copper];
+              return (
+                <div key={i} onClick={() => onOpen(c)} style={{
+                  flexShrink: 0, width: 110,
+                  background: `linear-gradient(145deg, ${g[0]}, ${g[1]})`,
+                  borderRadius: 16, padding: "14px 10px", cursor: "pointer",
+                }}>
+                  <p style={{ fontSize: 26, margin: "0 0 8px" }}>{c.emoji || "☕"}</p>
+                  <p style={{ color: "white", fontWeight: 700, fontSize: 10, fontFamily: FONT_SERIF, margin: "0 0 2px", lineHeight: 1.3 }}>{c.name}</p>
+                  <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 9, margin: 0 }}>{c.brand}</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
-      {/* Scan history */}
-      <p style={{ color:C.dark, fontWeight:600, fontSize:19, fontFamily:FONT_SERIF, letterSpacing:-0.1, marginBottom:12 }}>📋 Historique des scans</p>
-      {!user ? (
-        <p style={{ color:C.muted, fontSize:13 }}>Connectez-vous pour voir votre historique</p>
-      ) : loadingHistory ? (
-        <p style={{ color:C.muted, fontSize:13 }}>Chargement...</p>
-      ) : historyItems.length === 0 ? (
-        <div style={{ background:C.light, borderRadius:16, padding:"20px", textAlign:"center" }}>
-          <p style={{ fontSize:28, marginBottom:8 }}>📷</p>
-          <p style={{ color:C.muted, fontSize:13, margin:0 }}>Aucun scan pour l'instant</p>
-        </div>
-      ) : (
-        historyItems.map((s, i) => {
-          const c = s.coffees;
-          const g = c.gradient || [C.accent, C.copper];
-          return (
-            <FadeIn key={s.id || i} delay={i * 55}>
-              <div onClick={() => onOpen(c)} style={{
-                display:"flex", alignItems:"center", gap:14,
-                padding:"16px 0", borderBottom:`1px solid ${C.light}`, cursor:"pointer",
-              }}>
-                <div style={{ width:46, height:46, borderRadius:14, flexShrink:0,
-                  background:`linear-gradient(135deg, ${g[0]}, ${g[1]})`,
-                  display:"flex", alignItems:"center", justifyContent:"center", fontSize:22,
-                  boxShadow:`0 4px 12px ${g[0]}44` }}>{c.emoji || "☕"}</div>
-                <div style={{ flex:1 }}>
-                  <p style={{ fontWeight:600, color:C.dark, fontSize:15, margin:"0 0 2px",
-                    fontFamily:FONT_SERIF, letterSpacing:-0.1 }}>{c.name}</p>
-                  <p style={{ color:C.muted, fontSize:12, margin:0 }}>{c.brand} · {relativeTime(s.scanned_at)}</p>
-                </div>
-                <span style={{ color:C.accent, fontWeight:700, fontSize:17, fontFamily:FONT_SERIF }}>{c.avg_rating || "—"}</span>
-              </div>
-            </FadeIn>
-          );
-        })
-      )}
+      {/* ── Partager ────────────────────────────────────────────────────── */}
+      <button onClick={() => shareProfile(userName, archetype)} style={{
+        width: "100%", padding: "14px 0", marginBottom: 4,
+        background: "transparent", border: `1.5px solid ${C.light}`,
+        borderRadius: 99, color: C.muted, fontSize: 13, fontWeight: 600,
+        cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+        fontFamily: "'Inter', system-ui, sans-serif",
+        transition: `border-color 0.2s ${ease}`,
+      }}
+        onMouseEnter={e => e.currentTarget.style.borderColor = C.accent}
+        onMouseLeave={e => e.currentTarget.style.borderColor = C.light}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>
+        </svg>
+        Partager mon profil café
+      </button>
     </div>
   );
 }
