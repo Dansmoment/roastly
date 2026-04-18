@@ -75,6 +75,7 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
       brewing_methods: form.brewing_methods.length ? form.brewing_methods : ["Filtre"],
       emoji: EMOJIS[ei],
       gradient: GRADIENTS[gi],
+      image_url: offData?.image_url || null,
     };
     try {
       const saved = await api.addCoffee(newCoffee);

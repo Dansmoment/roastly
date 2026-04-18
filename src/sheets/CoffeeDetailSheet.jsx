@@ -109,11 +109,17 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
         <div ref={scrollRef} onScroll={handleScroll} style={{ flex:1, overflowY:"auto", background:C.bg }}>
           <div style={{ height:heroH, overflow:"hidden", position:"relative", borderRadius:"0 0 28px 28px" }}>
             <div style={{ position:"absolute", inset:"-20px -1px", background:`linear-gradient(145deg, ${g[0]}, ${g[1]})`, transform:`translateY(${parallaxOffset}px)`, transition:"transform 0.05s linear" }}>
-              <div style={{ position:"absolute", top:-40, right:-30, width:180, height:180, borderRadius:"50%", background:"rgba(255,255,255,0.07)" }}/>
-              <div style={{ position:"absolute", bottom:-20, left:20, width:120, height:120, borderRadius:"50%", background:"rgba(255,255,255,0.05)" }}/>
-              <div style={{ position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-54%)" }}>
-                <CoffeeIllustration emoji={coffee.emoji} size={110}/>
-              </div>
+              {coffee.image_url ? (
+                <img src={coffee.image_url} alt={coffee.name} style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center" }}/>
+              ) : (
+                <>
+                  <div style={{ position:"absolute", top:-40, right:-30, width:180, height:180, borderRadius:"50%", background:"rgba(255,255,255,0.07)" }}/>
+                  <div style={{ position:"absolute", bottom:-20, left:20, width:120, height:120, borderRadius:"50%", background:"rgba(255,255,255,0.05)" }}/>
+                  <div style={{ position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-54%)" }}>
+                    <CoffeeIllustration emoji={coffee.emoji} size={110}/>
+                  </div>
+                </>
+              )}
             </div>
             <div style={{ position:"absolute", bottom:0, left:0, right:0, height:80, background:`linear-gradient(transparent, ${C.bg})` }}/>
           </div>

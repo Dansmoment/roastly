@@ -19,8 +19,11 @@ export function CoffeeCard({ coffee, onOpen, index = 0 }) {
         <div style={{ width:54, height:54, borderRadius:18, flexShrink:0,
           background:`linear-gradient(145deg, ${coffee.gradient[0]}, ${coffee.gradient[1]})`,
           display:"flex", alignItems:"center", justifyContent:"center",
-          boxShadow:`0 4px 14px ${coffee.gradient[0]}55` }}>
-          <CoffeeIllustration emoji={coffee.emoji} size={34}/>
+          boxShadow:`0 4px 14px ${coffee.gradient[0]}55`, overflow:"hidden" }}>
+          {coffee.image_url
+            ? <img src={coffee.image_url} alt={coffee.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+            : <CoffeeIllustration emoji={coffee.emoji} size={34}/>
+          }
         </div>
         <div style={{ flex:1, minWidth:0 }}>
           <p style={{ color:C.dark, fontWeight:600, fontSize:16, margin:"0 0 2px",
@@ -83,8 +86,11 @@ function CarouselCard({ coffee, onOpen }) {
       }}>
       <div style={{ height:90, background:`linear-gradient(145deg, ${coffee.gradient[0]}, ${coffee.gradient[1]})`,
         display:"flex", alignItems:"center", justifyContent:"center",
-        position:"relative" }}>
-        <CoffeeIllustration emoji={coffee.emoji} size={58}/>
+        position:"relative", overflow:"hidden" }}>
+        {coffee.image_url
+          ? <img src={coffee.image_url} alt={coffee.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+          : <CoffeeIllustration emoji={coffee.emoji} size={58}/>
+        }
         <div style={{ position:"absolute", top:8, right:8, background:"rgba(44,62,53,0.06)",
           backdropFilter:"blur(6px)", borderRadius:99, padding:"3px 8px",
           display:"flex", alignItems:"center", gap:3 }}>
