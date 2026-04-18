@@ -8,8 +8,9 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
   const [savedCoffee, setSavedCoffee] = useState(null);
   const [authError, setAuthError] = useState(false);
   const [validationError, setValidationError] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({
-    name: "", brand: "", ean: "", description: "",
+    name: "", brand: "", ean: "", description: "", image_url: "",
     country: "", region: "", altitude: "", harvest: "",
     roast_level: "", labels: [], brewing_methods: [],
     tags: [],
@@ -21,11 +22,13 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
       setSavedCoffee(null);
       setAuthError(false);
       setValidationError(false);
+      setUploading(false);
       setForm({
         name: offData?.name || "",
         brand: offData?.brand || "",
         ean: scannedEAN || "",
         description: "",
+        image_url: offData?.image_url || "",
         country: offData?.origin_country || "",
         region: "",
         altitude: "",
@@ -37,6 +40,22 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
       });
     }
   }, [visible, scannedEAN, offData]);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const localUrl = URL.createObjectURL(file);
+    setForm(f => ({ ...f, image_url: localUrl }));
+    setUploading(true);
+    try {
+      const remoteUrl = await api.uploadCoffeeImage(file);
+      setForm(f => ({ ...f, image_url: remoteUrl }));
+    } catch {
+      // Keep local preview, upload failed — will store null on submit
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const toggleItem = (key, item) => {
     setForm(f => ({
@@ -75,7 +94,7 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
       brewing_methods: form.brewing_methods.length ? form.brewing_methods : ["Filtre"],
       emoji: EMOJIS[ei],
       gradient: GRADIENTS[gi],
-      image_url: offData?.image_url || null,
+      image_url: form.image_url?.startsWith('blob:') ? null : (form.image_url || null),
     };
     try {
       const saved = await api.addCoffee(newCoffee);
@@ -157,6 +176,39 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <FormInput label="Nom du café *" value={form.name} onChange={v => setForm(f => ({ ...f, name: v }))} placeholder="ex. Yirgacheffe Natural"/>
             <FormInput label="Marque / Torréfacteur" value={form.brand} onChange={v => setForm(f => ({ ...f, brand: v }))} placeholder="ex. Café Lutécia"/>
+
+            {/* Image upload */}
+            <div>
+              <p style={{ color: C.muted, fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Photo du packaging</p>
+              {form.image_url ? (
+                <div style={{ position: "relative" }}>
+                  <img src={form.image_url} alt="aperçu" style={{ width: "100%", height: 150, objectFit: "cover", borderRadius: 14, display: "block" }}/>
+                  {uploading && (
+                    <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ color: "white", fontSize: 12, fontWeight: 600 }}>Envoi en cours…</span>
+                    </div>
+                  )}
+                  <button onClick={() => setForm(f => ({ ...f, image_url: "" }))} style={{
+                    position: "absolute", top: 8, right: 8, width: 28, height: 28,
+                    background: "rgba(0,0,0,0.55)", border: "none", borderRadius: "50%",
+                    color: "white", fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>×</button>
+                </div>
+              ) : (
+                <label style={{
+                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                  height: 90, border: `2px dashed ${C.light}`, borderRadius: 14, cursor: "pointer",
+                  background: C.accent08, gap: 6,
+                }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ stroke: C.accent }} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                  </svg>
+                  <span style={{ color: C.accent, fontSize: 12, fontWeight: 600 }}>Ajouter une photo</span>
+                  <input type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload}/>
+                </label>
+              )}
+            </div>
             {!scannedEAN && (
               <FormInput label="Code-barres EAN (optionnel)" value={form.ean} onChange={v => setForm(f => ({ ...f, ean: v }))} placeholder="ex. 3760123456001"/>
             )}

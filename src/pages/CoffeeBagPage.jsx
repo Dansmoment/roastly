@@ -75,6 +75,63 @@ export function CoffeeBagPage({ coffees, onOpen, user }) {
   );
 }
 
+// ─── Badges ──────────────────────────────────────────────────────────────────
+const BADGE_DEFS = [
+  { id: "first_review", icon: "🫘", label: "Curieux", desc: "1er avis posté", check: (s, c) => s.reviews >= 1 },
+  { id: "five_reviews", icon: "⭐", label: "Connaisseur", desc: "5 avis postés", check: (s, c) => s.reviews >= 5 },
+  { id: "ten_reviews", icon: "🏆", label: "Expert", desc: "10 avis postés", check: (s, c) => s.reviews >= 10 },
+  { id: "explorer", icon: "🌍", label: "Explorateur", desc: "3 pays différents", check: (s, c) => c >= 3 },
+  { id: "passionate", icon: "❤️", label: "Passionné", desc: "10 favoris", check: (s, c) => s.favorites >= 10 },
+  { id: "collector", icon: "🗂️", label: "Collectionneur", desc: "20 avis postés", check: (s, c) => s.reviews >= 20 },
+];
+
+function BadgesSection({ stats, countriesCount }) {
+  const earned = BADGE_DEFS.filter(b => b.check(stats, countriesCount));
+  const locked = BADGE_DEFS.filter(b => !b.check(stats, countriesCount));
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <p style={{ color: C.dark, fontSize: 15, fontWeight: 700, fontFamily: FONT_SERIF, margin: "0 0 12px" }}>Badges</p>
+      {earned.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: locked.length > 0 ? 12 : 0 }}>
+          {earned.map(b => (
+            <div key={b.id} style={{
+              background: C.accent08, border: `1px solid ${C.accent19}`,
+              borderRadius: 14, padding: "10px 14px", display: "flex", alignItems: "center", gap: 8,
+              minWidth: 130, flex: "1 1 130px",
+            }}>
+              <span style={{ fontSize: 20 }}>{b.icon}</span>
+              <div>
+                <p style={{ color: C.accent, fontWeight: 700, fontSize: 12, margin: 0 }}>{b.label}</p>
+                <p style={{ color: C.muted, fontSize: 10, margin: 0 }}>{b.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {locked.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {locked.slice(0, 3).map(b => (
+            <div key={b.id} style={{
+              background: C.light, borderRadius: 14, padding: "8px 12px",
+              display: "flex", alignItems: "center", gap: 6, opacity: 0.5,
+              minWidth: 120, flex: "1 1 120px",
+            }}>
+              <span style={{ fontSize: 16, filter: "grayscale(1)" }}>{b.icon}</span>
+              <div>
+                <p style={{ color: C.muted, fontWeight: 600, fontSize: 11, margin: 0 }}>{b.label}</p>
+                <p style={{ color: C.muted, fontSize: 9, margin: 0 }}>{b.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {earned.length === 0 && locked.length > 0 && (
+        <p style={{ color: C.muted, fontSize: 12, margin: "8px 0 0" }}>Notez votre premier café pour débloquer vos badges !</p>
+      )}
+    </div>
+  );
+}
+
 // ─── Archetypes ──────────────────────────────────────────────────────────────
 const ARCHETYPES = {
   fruity: {
@@ -354,6 +411,9 @@ function ProfilePage({ coffees, onOpen, user }) {
       ) : (
         <DNATeaser />
       )}
+
+      {/* ── Badges ─────────────────────────────────────────────────────── */}
+      <BadgesSection stats={stats} countriesCount={countries.size} />
 
       {/* ── Dernières découvertes ───────────────────────────────────────── */}
       {foundCoffees.length > 0 && (

@@ -244,6 +244,19 @@ export async function fetchUserTasteProfile(userId) {
   return { profile, topTags, reviewCount: data.length };
 }
 
+// ─── Image upload ────────────────────────────────────────────────────────────
+
+export async function uploadCoffeeImage(file) {
+  const ext = file.name.split('.').pop() || 'jpg';
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const { error } = await supabase.storage
+    .from('coffee-images')
+    .upload(filename, file, { upsert: false, contentType: file.type });
+  if (error) throw error;
+  const { data } = supabase.storage.from('coffee-images').getPublicUrl(filename);
+  return data.publicUrl;
+}
+
 // ─── Open Food Facts ────────────────────────────────────────────────────────
 
 export async function fetchFromOpenFoodFacts(ean) {

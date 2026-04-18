@@ -267,13 +267,30 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
             </Section>
           </div>
         </div>
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"12px 20px 24px", background:`linear-gradient(transparent, ${C.bg} 30%)`, pointerEvents:"none" }}>
-          <button onClick={handleFavorite} style={{ width:"100%", background: isFav ? C.accent : C.primary, color:"white", border:"none",
-            borderRadius:16, padding:"15px 20px", fontSize:15, fontWeight:700, cursor:"pointer",
-            boxShadow:`0 8px 24px ${isFav ? C.accent33 : C.primary33}`, pointerEvents:"auto",
-            transition:`background 0.25s ${ease}, box-shadow 0.25s ${ease}`,
-            animation: favAnim ? "heartPulse 0.38s cubic-bezier(0.34,1.2,0.64,1)" : "none",
-          }}>{isFav ? "Retirer des favoris 💔" : "Ajouter à ma liste ❤️"}</button>
+        <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"12px 20px 28px", background:`linear-gradient(transparent, ${C.bg} 30%)`, pointerEvents:"none" }}>
+          <div style={{ display:"flex", gap:10 }}>
+            <button onClick={handleFavorite} style={{ flex:1, background: isFav ? C.accent : C.primary, color:"white", border:"none",
+              borderRadius:16, padding:"15px 20px", fontSize:15, fontWeight:700, cursor:"pointer",
+              boxShadow:`0 8px 24px ${isFav ? C.accent33 : C.primary33}`, pointerEvents:"auto",
+              transition:`background 0.25s ${ease}, box-shadow 0.25s ${ease}`,
+              animation: favAnim ? "heartPulse 0.38s cubic-bezier(0.34,1.2,0.64,1)" : "none",
+            }}>{isFav ? "Retirer 💔" : "Ajouter ❤️"}</button>
+            <button onClick={() => {
+              const text = `${coffee.name} — ${coffee.brand}\n⭐ ${coffee.avg_rating}/5 · ${coffee.origin_flag} ${coffee.origin_country}\n\nDécouvre ce café sur Roastly.`;
+              if (navigator.share) navigator.share({ title: coffee.name, text }).catch(() => {});
+              else navigator.clipboard?.writeText(text).then(() => {}).catch(() => {});
+            }} style={{
+              width:52, height:52, flexShrink:0, border:`1.5px solid ${C.light}`, borderRadius:16,
+              background:C.bg, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+              pointerEvents:"auto",
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ stroke: C.primary }} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                <polyline points="16 6 12 2 8 6"/>
+                <line x1="12" y1="2" x2="12" y2="15"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </>
