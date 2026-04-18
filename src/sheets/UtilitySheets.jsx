@@ -30,12 +30,11 @@ async function sendTestNotification() {
   }
 }
 
-export function SettingsSheet({ visible, onClose, user, onLogout }) {
+export function SettingsSheet({ visible, onClose, user, onLogout, darkMode, onToggleDark }) {
   const [notifs, setNotifs] = useState(() => {
     return localStorage.getItem('roastly_notifs') === 'true' ||
       Notification?.permission === 'granted';
   });
-  const [darkMode, setDarkMode] = useState(false);
   const [lang, setLang] = useState("fr");
   const [notifStatus, setNotifStatus] = useState(Notification?.permission || 'default');
 
@@ -48,7 +47,7 @@ export function SettingsSheet({ visible, onClose, user, onLogout }) {
         <span style={{ fontSize:20, width:28, textAlign:"center" }}>{icon}</span>
         <span style={{ flex:1, color: danger ? "#D32F2F" : C.text, fontSize:15, fontWeight:500 }}>{label}</span>
         {right || (onClick && (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.muted} strokeWidth="2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ stroke: C.muted }} strokeWidth="2">
             <polyline points="9 18 15 12 9 6"/>
           </svg>
         ))}
@@ -95,7 +94,7 @@ export function SettingsSheet({ visible, onClose, user, onLogout }) {
           Bloquées dans les réglages système
         </p>
       )}
-      <SettingRow icon="🌙" label="Mode sombre" right={<Toggle on={darkMode} onToggle={() => setDarkMode(!darkMode)}/>}/>
+      <SettingRow icon="🌙" label="Mode sombre" right={<Toggle on={darkMode} onToggle={onToggleDark}/>}/>
       <SettingRow icon="🌍" label="Langue" right={<span style={{ color:C.muted, fontSize:13 }}>{lang === "fr" ? "Français" : "English"}</span>} onClick={() => setLang(l => l === "fr" ? "en" : "fr")}/>
 
       <p style={{ color:C.muted, fontSize:11, fontWeight:500, textTransform:"uppercase", letterSpacing:1.5, margin:"20px 0 4px" }}>Données</p>
@@ -139,7 +138,7 @@ export function HelpSheet({ visible, onClose }) {
       <p style={{ color:C.muted, fontSize:13, marginBottom:24 }}>Trouvez rapidement les réponses à vos questions.</p>
 
       <div style={{ background:C.white, border:`1.5px solid ${C.light}`, borderRadius:14, display:"flex", alignItems:"center", padding:"10px 14px", gap:10, marginBottom:24 }}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.muted} strokeWidth="2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ stroke: C.muted }} strokeWidth="2">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
         <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Rechercher dans la FAQ..." style={{
@@ -161,7 +160,7 @@ export function HelpSheet({ visible, onClose }) {
               display:"flex", justifyContent:"space-between", alignItems:"center", padding:"16px 0", cursor:"pointer", gap:12,
             }}>
               <p style={{ color:C.text, fontSize:14, fontWeight:600, margin:0, flex:1 }}>{faq.q}</p>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.muted} strokeWidth="2"
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ stroke: C.muted }} strokeWidth="2"
                 style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0)", transition:`transform 0.25s ${ease}`, flexShrink:0 }}>
                 <polyline points="6 9 12 15 18 9"/>
               </svg>
@@ -207,10 +206,10 @@ export function AboutSheet({ visible, onClose }) {
       <div style={{ textAlign:"center", marginBottom:28 }}>
         <div style={{ display:"inline-flex", alignItems:"center", gap:10, marginBottom:16 }}>
           <svg width="44" height="44" viewBox="0 0 30 30" fill="none">
-            <ellipse cx="15" cy="15" rx="9" ry="12" fill={C.accent} opacity="0.15"/>
-            <ellipse cx="15" cy="15" rx="9" ry="12" stroke={C.accent} strokeWidth="1.6"/>
-            <path d="M15 4 C11.5 8.5 11.5 21.5 15 26" stroke={C.accent} strokeWidth="1.6" strokeLinecap="round"/>
-            <path d="M15 4 C18.5 8.5 18.5 21.5 15 26" stroke={C.accent} strokeWidth="1" strokeLinecap="round" opacity="0.35"/>
+            <ellipse cx="15" cy="15" rx="9" ry="12" style={{ fill: C.accent }} opacity="0.15"/>
+            <ellipse cx="15" cy="15" rx="9" ry="12" style={{ stroke: C.accent }} strokeWidth="1.6"/>
+            <path d="M15 4 C11.5 8.5 11.5 21.5 15 26" style={{ stroke: C.accent }} strokeWidth="1.6" strokeLinecap="round"/>
+            <path d="M15 4 C18.5 8.5 18.5 21.5 15 26" style={{ stroke: C.accent }} strokeWidth="1" strokeLinecap="round" opacity="0.35"/>
           </svg>
           <div>
             <span style={{ fontFamily:FONT_SERIF, fontWeight:700, fontSize:32, color:C.primary }}>Roastly</span>
@@ -271,7 +270,7 @@ export function ProfileMenuSheet({ visible, onClose, user, onOpenSettings, onOpe
           <p style={{ color: danger ? "#D32F2F" : C.text, fontSize:15, fontWeight:500, margin:0 }}>{label}</p>
           {desc && <p style={{ color:C.muted, fontSize:12, margin:"2px 0 0" }}>{desc}</p>}
         </div>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.muted} strokeWidth="2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ stroke: C.muted }} strokeWidth="2">
           <polyline points="9 18 15 12 9 6"/>
         </svg>
       </div>
@@ -283,7 +282,7 @@ export function ProfileMenuSheet({ visible, onClose, user, onOpenSettings, onOpe
       <div style={{ display:"flex", alignItems:"center", gap:16, marginBottom:28 }}>
         <div style={{ width:60, height:60, background:`linear-gradient(135deg, ${C.accent}, ${C.copper})`,
           borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center",
-          fontSize:24, fontWeight:800, color:"white", boxShadow:`0 4px 16px ${C.accent}33` }}>
+          fontSize:24, fontWeight:800, color:"white", boxShadow:`0 4px 16px ${C.accent20}` }}>
           {name[0]?.toUpperCase()}
         </div>
         <div>

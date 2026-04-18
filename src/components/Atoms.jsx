@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { C, FONT_SERIF, FONT_SANS, ease, spring } from '../lib/constants';
 
 const shimmerStyle = {
-  background: `linear-gradient(90deg, ${C.light} 25%, #F0E5D2 50%, ${C.light} 75%)`,
+  background: `linear-gradient(90deg, ${C.light} 25%, var(--c-shimmer) 50%, ${C.light} 75%)`,
   backgroundSize: "200% 100%",
   animation: "shimmer 1.5s ease-in-out infinite",
   borderRadius: 8,
@@ -61,7 +61,7 @@ export function Stars({ rating, size = 13 }) {
     <span style={{ display: "flex", gap: 2, alignItems: "center" }}>
       {[1,2,3,4,5].map(s => (
         <svg key={s} width={size} height={size} viewBox="0 0 24 24"
-          fill={s <= Math.round(rating) ? C.primary : C.light}>
+          style={{ fill: s <= Math.round(rating) ? C.primary : C.light }}>
           <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
         </svg>
       ))}

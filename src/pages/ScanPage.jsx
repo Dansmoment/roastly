@@ -148,12 +148,12 @@ export function ScanPage({ onFound, onNotFound, user }) {
         {/* Camera icon */}
         <div style={{
           width: 90, height: 90, borderRadius: "50%",
-          background: `${C.accent}20`, border: `2px solid ${C.accent}55`,
+          background: C.accent13, border: `2px solid ${C.accent33}`,
           display: "flex", alignItems: "center", justifyContent: "center",
           marginBottom: 28,
           animation: `popIn 0.6s cubic-bezier(0.34,1.2,0.64,1) both`,
         }}>
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ stroke: C.accent }} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
             <circle cx="12" cy="13" r="4"/>
           </svg>
@@ -183,7 +183,7 @@ export function ScanPage({ onFound, onNotFound, user }) {
             borderRadius: 99, padding: "16px 32px",
             color: "white", fontSize: 16, fontWeight: 700,
             cursor: "pointer", width: "100%",
-            boxShadow: `0 8px 24px ${C.accent}44`,
+            boxShadow: `0 8px 24px ${C.accent27}`,
           }}>
             Autoriser la caméra
           </button>
@@ -219,14 +219,14 @@ export function ScanPage({ onFound, onNotFound, user }) {
           position: "absolute", top: "50%", left: "50%",
           transform: "translate(-50%, -50%)",
           width: 280, height: 280, borderRadius: "50%",
-          background: `radial-gradient(circle, ${C.accent}22 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${C.accent13} 0%, transparent 70%)`,
           animation: "pulse 2.5s ease-in-out infinite",
         }}/>
         <div style={{
           position: "absolute", top: "50%", left: "50%",
           transform: "translate(-50%, -50%)",
           width: 180, height: 180, borderRadius: "50%",
-          border: `1px solid ${C.accent}33`,
+          border: `1px solid ${C.accent20}`,
           animation: "pulse 2.5s ease-in-out infinite 0.4s",
         }}/>
 
@@ -239,9 +239,9 @@ export function ScanPage({ onFound, onNotFound, user }) {
           animation: logoVisible ? `rotateCoffee 0.7s cubic-bezier(0.34,1.2,0.64,1) both` : "none",
         }}>
           <svg width="72" height="72" viewBox="0 0 30 30" fill="none" style={{ display: "block", margin: "0 auto 16px" }}>
-            <ellipse cx="15" cy="15" rx="9" ry="12" fill={C.accent} opacity="0.18"/>
-            <ellipse cx="15" cy="15" rx="9" ry="12" stroke={C.accent} strokeWidth="1.8"/>
-            <path d="M15 4 C11.5 8.5 11.5 21.5 15 26" stroke={C.accent} strokeWidth="1.8" strokeLinecap="round"/>
+            <ellipse cx="15" cy="15" rx="9" ry="12" style={{ fill: C.accent }} opacity="0.18"/>
+            <ellipse cx="15" cy="15" rx="9" ry="12" style={{ stroke: C.accent }} strokeWidth="1.8"/>
+            <path d="M15 4 C11.5 8.5 11.5 21.5 15 26" style={{ stroke: C.accent }} strokeWidth="1.8" strokeLinecap="round"/>
           </svg>
           <p style={{
             fontFamily: FONT_SERIF, fontWeight: 700, fontSize: 38,
@@ -343,7 +343,7 @@ export function ScanPage({ onFound, onNotFound, user }) {
             {/* Scanline */}
             <div style={{
               height: 2, margin: "44px 0",
-              background: `linear-gradient(90deg, transparent, ${C.accent}CC, ${C.accent}, ${C.accent}CC, transparent)`,
+              background: `linear-gradient(90deg, transparent, ${C.accent80}, ${C.accent}, ${C.accent80}, transparent)`,
               animation: "scanline 2s ease-in-out infinite",
               borderRadius: 99,
             }}/>
@@ -505,7 +505,7 @@ export function ScanPage({ onFound, onNotFound, user }) {
             borderRadius: 99, padding: "16px 32px",
             color: "white", fontSize: 16, fontWeight: 700,
             cursor: "pointer", width: "100%",
-            boxShadow: `0 8px 24px ${C.accent}55`,
+            boxShadow: `0 8px 24px ${C.accent33}`,
           }}>
             ＋ Ajouter ce café
           </button>

@@ -32,7 +32,7 @@ export function SearchPage({ coffees, onOpen, onNotFound }) {
   return (
     <div>
       <div style={{ borderRadius:24, padding:"22px 20px 24px", marginBottom:22, position:"relative", overflow:"hidden" }}>
-        <div style={{ position:"absolute", inset:"-20px -1px", background:`linear-gradient(140deg, ${C.primary}, ${C.dark})`,
+        <div style={{ position:"absolute", inset:"-20px -1px", background:`linear-gradient(140deg, #1A0F07, #0E0804)`,
           transform:`translateY(${heroScroll * 0.3}px)`, transition:"transform 0.05s linear" }}/>
         <div style={{ position:"absolute", top:-30, right:-20, width:130, height:130,
           borderRadius:"50%", background:"rgba(255,255,255,0.06)" }}/>
@@ -95,7 +95,7 @@ export function SearchPage({ coffees, onOpen, onNotFound }) {
           <button onClick={onNotFound} style={{
             background:C.primary, color:"white", border:"none", borderRadius:99,
             padding:"12px 28px", fontSize:14, fontWeight:600, cursor:"pointer",
-            boxShadow:`0 6px 20px ${C.primary}40`,
+            boxShadow:`0 6px 20px ${C.primary25}`,
           }}>
             {query ? `Ajouter "${query}" +` : "Ajouter un café +"}
           </button>

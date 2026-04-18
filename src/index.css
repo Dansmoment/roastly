@@ -13,10 +13,57 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+:root {
+  --c-bg:       #F5EFE4;
+  --c-bg-rgb:   245, 239, 228;
+  --c-primary:  #1A0F07;
+  --c-accent:   #C47A2A;
+  --c-light:    #E6D8C3;
+  --c-dark:     #0E0804;
+  --c-roast:    #7A3E1E;
+  --c-text:     #1A0F07;
+  --c-muted:    #8C7060;
+  --c-copper:   #D49040;
+  --c-shimmer:  #F0E5D2;
+
+  --c-accent-08: color-mix(in srgb, var(--c-accent)  8%, transparent);
+  --c-accent-13: color-mix(in srgb, var(--c-accent) 13%, transparent);
+  --c-accent-19: color-mix(in srgb, var(--c-accent) 19%, transparent);
+  --c-accent-20: color-mix(in srgb, var(--c-accent) 20%, transparent);
+  --c-accent-27: color-mix(in srgb, var(--c-accent) 27%, transparent);
+  --c-accent-33: color-mix(in srgb, var(--c-accent) 33%, transparent);
+  --c-accent-40: color-mix(in srgb, var(--c-accent) 40%, transparent);
+  --c-accent-53: color-mix(in srgb, var(--c-accent) 53%, transparent);
+  --c-accent-80: color-mix(in srgb, var(--c-accent) 80%, transparent);
+
+  --c-primary-07: color-mix(in srgb, var(--c-primary)  7%, transparent);
+  --c-primary-08: color-mix(in srgb, var(--c-primary)  8%, transparent);
+  --c-primary-16: color-mix(in srgb, var(--c-primary) 16%, transparent);
+  --c-primary-19: color-mix(in srgb, var(--c-primary) 19%, transparent);
+  --c-primary-25: color-mix(in srgb, var(--c-primary) 25%, transparent);
+  --c-primary-33: color-mix(in srgb, var(--c-primary) 33%, transparent);
+
+  --c-bg-90: color-mix(in srgb, var(--c-bg) 90%, transparent);
+}
+
+[data-theme="dark"] {
+  --c-bg:      #120C08;
+  --c-bg-rgb:  18, 12, 8;
+  --c-primary: #F0E6D3;
+  --c-accent:  #D4893A;
+  --c-light:   #2A1C12;
+  --c-dark:    #FAF4ED;
+  --c-roast:   #C47A2A;
+  --c-text:    #E8D8C0;
+  --c-muted:   #9A8070;
+  --c-copper:  #D49040;
+  --c-shimmer: #3A2518;
+}
+
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: #F5EFE4;
-  color: #1A0F07;
+  background: var(--c-bg);
+  color: var(--c-text);
   overflow-x: hidden;
   min-height: 100dvh;
   margin: 0;
@@ -24,7 +71,7 @@ body {
 
 #root {
   min-height: 100dvh;
-  background: #F5EFE4;
+  background: var(--c-bg);
 }
 
 input, button, textarea {

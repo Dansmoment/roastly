@@ -100,7 +100,7 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
         <div style={{
           position:"absolute", top:0, left:0, right:0, zIndex:10, padding:"14px 16px",
           display:"flex", alignItems:"center", gap:12,
-          background:`rgba(253,246,238,${headerOpacity})`,
+          background:`rgba(var(--c-bg-rgb),${headerOpacity})`,
           backdropFilter:`blur(${headerOpacity * 12}px)`,
         }}>
           <BackBtn onBack={onClose}/>
@@ -270,7 +270,7 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
         <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"12px 20px 24px", background:`linear-gradient(transparent, ${C.bg} 30%)`, pointerEvents:"none" }}>
           <button onClick={handleFavorite} style={{ width:"100%", background: isFav ? C.accent : C.primary, color:"white", border:"none",
             borderRadius:16, padding:"15px 20px", fontSize:15, fontWeight:700, cursor:"pointer",
-            boxShadow:`0 8px 24px ${isFav ? C.accent : C.primary}55`, pointerEvents:"auto",
+            boxShadow:`0 8px 24px ${isFav ? C.accent33 : C.primary33}`, pointerEvents:"auto",
             transition:`background 0.25s ${ease}, box-shadow 0.25s ${ease}`,
             animation: favAnim ? "heartPulse 0.38s cubic-bezier(0.34,1.2,0.64,1)" : "none",
           }}>{isFav ? "Retirer des favoris 💔" : "Ajouter à ma liste ❤️"}</button>

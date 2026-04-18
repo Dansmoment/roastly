@@ -54,7 +54,7 @@ export function TopRatedCarousel({ coffees, onOpen }) {
     <div style={{ marginBottom: 24 }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
         <p style={{ color:C.dark, fontWeight:600, fontSize:19, fontFamily:FONT_SERIF, letterSpacing:-0.1, margin:0, display:"flex", alignItems:"center", gap:7 }}>
-          <svg width="17" height="17" viewBox="0 0 24 24" fill={C.accent}>
+          <svg width="17" height="17" viewBox="0 0 24 24" style={{ fill: C.accent }}>
             <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
           </svg>
           Mieux notés

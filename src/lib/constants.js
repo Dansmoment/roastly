@@ -1,17 +1,33 @@
-// ─── Palette — Café Moulu · Espresso & Cuivre ────────────────────────────────
+// ─── Palette — CSS custom properties (light/dark via data-theme) ─────────────
 export const C = {
-  bg:      "#F5EFE4",   // Parchemin chaud
-  primary: "#1A0F07",   // Espresso profond
-  accent:  "#C47A2A",   // Ambre torréfié
-  light:   "#E6D8C3",   // Sable doux
-  dark:    "#0E0804",   // Noir café
-  roast:   "#7A3E1E",   // Torréfaction medium (remplace green)
-  text:    "#1A0F07",   // Même qu'espresso
-  muted:   "#8C7060",   // Brun-gris chaud
+  bg:      "var(--c-bg)",
+  primary: "var(--c-primary)",
+  accent:  "var(--c-accent)",
+  light:   "var(--c-light)",
+  dark:    "var(--c-dark)",
+  roast:   "var(--c-roast)",
+  text:    "var(--c-text)",
+  muted:   "var(--c-muted)",
   white:   "#FFFFFF",
-  copper:  "#D49040",   // Or cuivré
-  // compat alias (évite de casser des refs existantes)
-  green:   "#7A3E1E",
+  copper:  "var(--c-copper)",
+  green:   "var(--c-roast)",
+  // Alpha variants — replace ${C.x}HH hex-alpha patterns
+  accent08:  "var(--c-accent-08)",
+  accent13:  "var(--c-accent-13)",
+  accent19:  "var(--c-accent-19)",
+  accent20:  "var(--c-accent-20)",
+  accent27:  "var(--c-accent-27)",
+  accent33:  "var(--c-accent-33)",
+  accent40:  "var(--c-accent-40)",
+  accent53:  "var(--c-accent-53)",
+  accent80:  "var(--c-accent-80)",
+  primary07: "var(--c-primary-07)",
+  primary08: "var(--c-primary-08)",
+  primary16: "var(--c-primary-16)",
+  primary19: "var(--c-primary-19)",
+  primary25: "var(--c-primary-25)",
+  primary33: "var(--c-primary-33)",
+  bgA90:     "var(--c-bg-90)",
 };
 
 export const FONT_SERIF = "'Cormorant Garamond', Georgia, serif";

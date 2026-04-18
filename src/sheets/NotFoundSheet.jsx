@@ -141,7 +141,7 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
 
         {offData && step === 0 && (
           <div style={{
-            background: `${C.primary}12`, border: `1px solid ${C.primary}30`,
+            background: C.primary07, border: `1px solid ${C.primary19}`,
             borderRadius: 12, padding: "10px 14px", marginBottom: 18,
             display: "flex", alignItems: "center", gap: 8,
           }}>
@@ -281,7 +281,7 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
                     <button key={b} onClick={() => toggleItem('brewing_methods', b)} style={{
                       border: `1.5px solid ${on ? C.accent : C.light}`, borderRadius: 99,
                       padding: "8px 14px", fontSize: 13, fontWeight: on ? 700 : 500,
-                      background: on ? `${C.accent}15` : C.white, color: on ? C.accent : C.muted,
+                      background: on ? C.accent08 : C.white, color: on ? C.accent : C.muted,
                       cursor: "pointer", transition: `all 0.18s ${ease}`,
                       display: "flex", alignItems: "center", gap: 5,
                     }}>

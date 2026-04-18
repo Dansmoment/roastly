@@ -344,7 +344,7 @@ function ProfilePage({ coffees, onOpen, user }) {
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginTop: 14 }}>
               {tasteProfile.topTags.map((tag, i) => (
                 <span key={i} style={{
-                  background: `${C.accent}15`, color: C.accent, border: `1px solid ${C.accent}30`,
+                  background: C.accent08, color: C.accent, border: `1px solid ${C.accent19}`,
                   borderRadius: 99, padding: "4px 12px", fontSize: 12, fontWeight: 600,
                 }}>{tag}</span>
               ))}

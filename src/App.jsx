@@ -25,37 +25,31 @@ const TABS = [
 function RoastlyLogo({ size = 28 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
-      {/* Cup body */}
       <path
         d="M8 13 L10 24 Q10 26 13 26 L19 26 Q22 26 22 24 L24 13 Z"
-        fill={`${C.accent}20`}
-        stroke={C.accent}
+        style={{ fill: C.accent13, stroke: C.accent }}
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
-      {/* Handle */}
       <path
         d="M24 17 Q29 17 29 21 Q29 25 24 25"
         fill="none"
-        stroke={C.accent}
+        style={{ stroke: C.accent }}
         strokeWidth="1.5"
         strokeLinecap="round"
       />
-      {/* Coffee surface */}
-      <ellipse cx="16" cy="13" rx="8" ry="2.2" fill={C.accent} opacity="0.45"/>
-      {/* Swirl */}
+      <ellipse cx="16" cy="13" rx="8" ry="2.2" style={{ fill: C.accent }} opacity="0.45"/>
       <path
         d="M13 13 Q15 11.2 16 13 Q17 14.8 19 13"
         fill="none"
-        stroke={C.copper}
+        style={{ stroke: C.copper }}
         strokeWidth="1.2"
         strokeLinecap="round"
         opacity="0.9"
       />
-      {/* Steam */}
-      <path d="M13 9 Q12 7 13 5" fill="none" stroke={`${C.accent}88`} strokeWidth="1.2" strokeLinecap="round"/>
-      <path d="M16 8 Q15 6 16 4" fill="none" stroke={`${C.accent}66`} strokeWidth="1.2" strokeLinecap="round"/>
-      <path d="M19 9 Q18 7 19 5" fill="none" stroke={`${C.accent}88`} strokeWidth="1.2" strokeLinecap="round"/>
+      <path d="M13 9 Q12 7 13 5" fill="none" style={{ stroke: C.accent53 }} strokeWidth="1.2" strokeLinecap="round"/>
+      <path d="M16 8 Q15 6 16 4" fill="none" style={{ stroke: C.accent40 }} strokeWidth="1.2" strokeLinecap="round"/>
+      <path d="M19 9 Q18 7 19 5" fill="none" style={{ stroke: C.accent53 }} strokeWidth="1.2" strokeLinecap="round"/>
     </svg>
   );
 }
@@ -63,18 +57,18 @@ function RoastlyLogo({ size = 28 }) {
 function TabIcon({ type, active }) {
   const color = active ? C.accent : C.muted;
   if (type === "search") return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ stroke: color }} strokeWidth="2">
       <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
     </svg>
   );
   if (type === "scan") return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={active ? C.white : C.muted} strokeWidth="2">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ stroke: active ? C.white : C.muted }} strokeWidth="2">
       <path d="M4 7V4h3"/><path d="M17 4h3v3"/><path d="M20 17v3h-3"/><path d="M7 20H4v-3"/>
       <line x1="7" y1="12" x2="17" y2="12"/>
     </svg>
   );
   if (type === "bag") return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ stroke: color }} strokeWidth="2">
       <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
       <line x1="3" y1="6" x2="21" y2="6"/>
       <path d="M16 10a4 4 0 01-8 0"/>
@@ -86,6 +80,7 @@ function TabIcon({ type, active }) {
 export default function App() {
   const [splash, setSplash] = useState(true);
   const [onboarding, setOnboarding] = useState(() => !localStorage.getItem('roastly_onboarded'));
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('roastly_dark') === 'true');
   const [tab, setTab] = useState("search");
   const [slideDir, setSlideDir] = useState("right");
   const [user, setUser] = useState(null);
@@ -102,6 +97,12 @@ export default function App() {
   const [showHelp, setShowHelp] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  // Dark mode
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    localStorage.setItem('roastly_dark', darkMode ? 'true' : 'false');
+  }, [darkMode]);
 
   // Auth listener
   useEffect(() => {
@@ -213,7 +214,25 @@ export default function App() {
               Roastly<span style={{ color: C.accent }}>.</span>
             </span>
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <button onClick={() => setDarkMode(d => !d)} style={{
+              width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.light}`,
+              background: "transparent", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              {darkMode ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ stroke: C.accent }} strokeWidth="2" strokeLinecap="round">
+                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                  <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+              ) : (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style={{ stroke: C.muted }} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+              )}
+            </button>
             {user ? (
               <button onClick={() => setShowProfileMenu(true)} style={{
                 width: 36, height: 36, borderRadius: "50%", border: "none",
@@ -255,7 +274,7 @@ export default function App() {
         <div style={{
           position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
           width: "100%", maxWidth: 430, zIndex: 100,
-          background: `rgba(245,239,228,0.9)`, backdropFilter: "blur(20px) saturate(1.6)",
+          background: C.bgA90, backdropFilter: "blur(20px) saturate(1.6)",
           borderTop: `1px solid ${C.light}`,
           padding: "6px 16px calc(env(safe-area-inset-bottom, 8px) + 6px)",
           display: "flex", justifyContent: "space-around", alignItems: "center",
@@ -286,7 +305,7 @@ export default function App() {
                 alignItems: "center", gap: isScan ? 6 : 2,
                 transform: isScan && active ? "scale(1.05)" : "scale(1)",
                 transition: `all 0.25s ${spring}`,
-                boxShadow: isScan ? `0 4px 16px ${active ? C.primary : C.accent}55` : "none",
+                boxShadow: isScan ? `0 4px 16px ${active ? C.primary33 : C.accent33}` : "none",
               }}>
                 <TabIcon type={t.icon} active={active}/>
                 <span style={{
@@ -333,6 +352,8 @@ export default function App() {
           onClose={() => setShowSettings(false)}
           user={user}
           onLogout={handleLogout}
+          darkMode={darkMode}
+          onToggleDark={() => setDarkMode(d => !d)}
         />
         <HelpSheet
           visible={showHelp}
