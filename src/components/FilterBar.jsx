@@ -10,7 +10,7 @@ export function FilterBar({ active, onSelect }) {
           <button key={f.id} onClick={() => onSelect(f.id)} style={{
             flexShrink: 0, border: `1.5px solid ${on ? C.primary : C.light}`,
             borderRadius: 99, padding: "7px 16px", fontSize: 13, fontWeight: on ? 700 : 500,
-            background: on ? C.primary : C.white, color: on ? C.white : C.muted,
+            background: on ? C.primary : C.bg, color: on ? C.white : C.muted,
             cursor: "pointer", transition: `all 0.22s ${ease}`, whiteSpace: "nowrap",
           }}>{f.label}</button>
         );

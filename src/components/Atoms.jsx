@@ -81,10 +81,10 @@ export function Pill({ children, color = C.primary, bg = C.light, small }) {
 
 export function LabelBadge({ label }) {
   const map = {
-    "Bio":                 { bg: "#F0E8D8", color: "#6B3A18" },
-    "Fair Trade":          { bg: "#F5EBE0", color: "#8B4010" },
-    "Rainforest Alliance": { bg: "#EDE4D4", color: "#5A3010" },
-    "Direct Trade":        { bg: "#E8DCC8", color: "#3A1E0C" },
+    "Bio":                 { bg: C.accent08,  color: C.roast },
+    "Fair Trade":          { bg: C.accent13,  color: C.roast },
+    "Rainforest Alliance": { bg: C.accent08,  color: C.primary },
+    "Direct Trade":        { bg: C.primary08, color: C.primary },
   };
   const s = map[label] || { bg: C.light, color: C.primary };
   return <Pill bg={s.bg} color={s.color}>{label}</Pill>;
@@ -122,7 +122,7 @@ export function FormInput({ label, value, onChange, placeholder, type = "text" }
       <p style={{ color:C.muted, fontSize:12, fontWeight:600, marginBottom:6 }}>{label}</p>
       <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
         style={{ width:"100%", border:`1.5px solid ${C.light}`, borderRadius:14,
-          padding:"12px 14px", fontSize:14, color:C.text, background:C.white,
+          padding:"12px 14px", fontSize:14, color:C.text, background:C.surface,
           outline:"none", boxSizing:"border-box", fontFamily:"inherit" }}/>
     </div>
   );

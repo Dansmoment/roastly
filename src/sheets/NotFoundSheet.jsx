@@ -168,7 +168,7 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
                 rows={3}
                 style={{
                   width: "100%", border: `1.5px solid ${C.light}`, borderRadius: 14,
-                  padding: "12px 14px", fontSize: 14, color: C.text, background: C.white,
+                  padding: "12px 14px", fontSize: 14, color: C.text, background: C.surface,
                   outline: "none", boxSizing: "border-box", fontFamily: "inherit", resize: "vertical",
                 }}
               />
@@ -199,7 +199,7 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
                     <button key={c.name} onClick={() => setForm(f => ({ ...f, country: c.name }))} style={{
                       border: `1.5px solid ${on ? C.primary : C.light}`, borderRadius: 99,
                       padding: "7px 14px", fontSize: 13, fontWeight: on ? 700 : 500,
-                      background: on ? C.primary : C.white, color: on ? C.white : C.muted,
+                      background: on ? C.primary : C.bg, color: on ? C.white : C.muted,
                       cursor: "pointer", transition: `all 0.18s ${ease}`,
                       display: "flex", alignItems: "center", gap: 5,
                     }}>
@@ -229,7 +229,7 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
                     <button key={r} onClick={() => setForm(f => ({ ...f, roast_level: r }))} style={{
                       border: `1.5px solid ${on ? C.primary : C.light}`, borderRadius: 14,
                       padding: "10px 16px", fontSize: 13, fontWeight: on ? 700 : 500,
-                      background: on ? C.primary : C.white, color: on ? C.white : C.text,
+                      background: on ? C.primary : C.bg, color: on ? C.white : C.text,
                       cursor: "pointer", transition: `all 0.18s ${ease}`,
                       display: "flex", alignItems: "center", gap: 8,
                     }}>
@@ -256,7 +256,7 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
                     <button key={l} onClick={() => toggleItem('labels', l)} style={{
                       border: `1.5px solid ${on ? C.green : C.light}`, borderRadius: 99,
                       padding: "8px 14px", fontSize: 13, fontWeight: on ? 700 : 500,
-                      background: on ? "#DFF0E8" : C.white, color: on ? "#2A5E40" : C.muted,
+                      background: on ? "rgba(46,125,50,0.14)" : C.bg, color: on ? "#2A5E40" : C.muted,
                       cursor: "pointer", transition: `all 0.18s ${ease}`,
                       display: "flex", alignItems: "center", gap: 5,
                     }}>
@@ -281,7 +281,7 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
                     <button key={b} onClick={() => toggleItem('brewing_methods', b)} style={{
                       border: `1.5px solid ${on ? C.accent : C.light}`, borderRadius: 99,
                       padding: "8px 14px", fontSize: 13, fontWeight: on ? 700 : 500,
-                      background: on ? C.accent08 : C.white, color: on ? C.accent : C.muted,
+                      background: on ? C.accent08 : C.bg, color: on ? C.accent : C.muted,
                       cursor: "pointer", transition: `all 0.18s ${ease}`,
                       display: "flex", alignItems: "center", gap: 5,
                     }}>
@@ -307,7 +307,7 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
                   <button key={t} onClick={() => toggleItem('tags', t)} style={{
                     border: `1.5px solid ${on ? C.primary : C.light}`, borderRadius: 99,
                     padding: "9px 18px", fontSize: 13, fontWeight: on ? 700 : 500,
-                    background: on ? C.primary : C.white, color: on ? C.white : C.muted,
+                    background: on ? C.primary : C.bg, color: on ? C.white : C.muted,
                     cursor: "pointer", transition: `all 0.18s ${ease}`,
                     transform: on ? "scale(1.05)" : "scale(1)",
                   }}>{t}</button>
@@ -342,7 +342,7 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
 
             {/* Recap card */}
             <div style={{
-              background: C.white, borderRadius: 20, padding: 18, textAlign: "left",
+              background: C.surface, borderRadius: 20, padding: 18, textAlign: "left",
               border: `1px solid ${C.light}`,
             }}>
               <p style={{ color: C.muted, fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Récapitulatif</p>

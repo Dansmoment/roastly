@@ -59,7 +59,7 @@ export function AuthSheet({ visible, onClose, onLogin }) {
       <div style={{ background:C.light, borderRadius:12, padding:3, display:"flex", marginBottom:28, position:"relative" }}>
         <div style={{
           position:"absolute", top:3, bottom:3, width:"calc(50% - 3px)", borderRadius:10,
-          background:C.white, boxShadow:"0 1px 4px rgba(0,0,0,0.1)",
+          background:C.surface, boxShadow:"0 1px 4px rgba(0,0,0,0.1)",
           transform:`translateX(${mode === "signup" ? "100%" : "0"})`,
           transition:`transform 0.3s ${spring}`,
         }}/>
@@ -92,7 +92,7 @@ export function AuthSheet({ visible, onClose, onLogin }) {
           <input type="password" value={form.password} onChange={e => setForm(f=>({...f,password:e.target.value}))}
             placeholder="••••••••"
             style={{ width:"100%", border:`1.5px solid ${C.light}`, borderRadius:14,
-              padding:"12px 14px", fontSize:14, color:C.text, background:C.white,
+              padding:"12px 14px", fontSize:14, color:C.text, background:C.surface,
               outline:"none", boxSizing:"border-box", fontFamily:"inherit" }}/>
         </div>
 
@@ -121,7 +121,7 @@ export function AuthSheet({ visible, onClose, onLogin }) {
           ].map(p => (
             <button key={p.name} onClick={() => handleSocial(p.provider)} style={{
               flex:1, maxWidth:160, border:`1.5px solid ${C.light}`, borderRadius:14,
-              padding:"12px", background:C.white, cursor:"pointer",
+              padding:"12px", background:C.surface, cursor:"pointer",
               display:"flex", alignItems:"center", justifyContent:"center", gap:8,
             }}>
               <span style={{ fontSize:18 }}>{p.icon}</span>

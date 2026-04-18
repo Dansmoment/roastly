@@ -9,6 +9,8 @@ export const C = {
   text:    "var(--c-text)",
   muted:   "var(--c-muted)",
   white:   "#FFFFFF",
+  surface: "var(--c-surface)",
+  shadowSm: "var(--c-shadow-sm)",
   copper:  "var(--c-copper)",
   green:   "var(--c-roast)",
   // Alpha variants — replace ${C.x}HH hex-alpha patterns

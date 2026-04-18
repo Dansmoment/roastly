@@ -137,7 +137,7 @@ export function HelpSheet({ visible, onClose }) {
       <p style={{ color:C.dark, fontWeight:700, fontSize:22, fontFamily:FONT_SERIF, margin:"0 0 4px" }}>Aide & FAQ</p>
       <p style={{ color:C.muted, fontSize:13, marginBottom:24 }}>Trouvez rapidement les réponses à vos questions.</p>
 
-      <div style={{ background:C.white, border:`1.5px solid ${C.light}`, borderRadius:14, display:"flex", alignItems:"center", padding:"10px 14px", gap:10, marginBottom:24 }}>
+      <div style={{ background:C.surface, border:`1.5px solid ${C.light}`, borderRadius:14, display:"flex", alignItems:"center", padding:"10px 14px", gap:10, marginBottom:24 }}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ stroke: C.muted }} strokeWidth="2">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
@@ -179,7 +179,7 @@ export function HelpSheet({ visible, onClose }) {
             <textarea value={contactMsg} onChange={e => setContactMsg(e.target.value)}
               placeholder="Décrivez votre problème ou suggestion..." rows={4} style={{
                 width:"100%", border:`1.5px solid ${C.light}`, borderRadius:14,
-                padding:"12px 14px", fontSize:14, color:C.text, background:C.white,
+                padding:"12px 14px", fontSize:14, color:C.text, background:C.surface,
                 outline:"none", boxSizing:"border-box", fontFamily:"inherit", resize:"vertical",
               }}/>
             <button onClick={() => { if (contactMsg.trim()) setContactSent(true); }} style={{

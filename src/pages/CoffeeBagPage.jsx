@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { C, FONT_SERIF, ease, spring, ARTICLES } from '../lib/constants';
+import { C, FONT_SERIF, FONT_SANS, ease, spring, ARTICLES } from '../lib/constants';
 import { FadeIn } from '../components/Atoms';
 import { RadarChart } from '../components/Charts';
 import * as api from '../lib/api';
@@ -14,7 +14,7 @@ export function CoffeeBagPage({ coffees, onOpen, user }) {
       <div style={{ background:C.light, borderRadius:12, padding:3, display:"flex", marginBottom:24, position:"relative" }}>
         <div style={{
           position:"absolute", top:3, bottom:3, width:"calc(50% - 3px)", borderRadius:10,
-          background:C.white, boxShadow:"0 1px 4px rgba(0,0,0,0.1)",
+          background:C.surface, boxShadow:"0 1px 4px rgba(0,0,0,0.1)",
           transform:`translateX(${activeTab * 100}%)`,
           transition:`transform 0.3s ${spring}`,
         }}/>
@@ -146,7 +146,7 @@ function YearCard({ year, found, reviews, countries }) {
           { v: countries, label: "Pays", icon: "🌍", color: "#2E7D32" },
           { v: reviews, label: "Avis", icon: "⭐", color: "#5C6BC0" },
         ].map((s, i) => (
-          <div key={i} style={{ background: C.white, borderRadius: 14, padding: "12px 6px", textAlign: "center" }}>
+          <div key={i} style={{ background: C.surface, borderRadius: 14, padding: "12px 6px", textAlign: "center" }}>
             <p style={{ fontSize: 18, margin: "0 0 4px" }}>{s.icon}</p>
             <p style={{ color: C.dark, fontWeight: 800, fontSize: 20, margin: "0 0 2px", fontFamily: FONT_SERIF }}>{s.v}</p>
             <p style={{ color: C.muted, fontSize: 10, margin: 0, lineHeight: 1.3 }}>{s.label}</p>
@@ -168,7 +168,7 @@ function DNATeaser() {
     { label: "Acidité", v: 60 }, { label: "Corps", v: 38 }, { label: "Douceur", v: 65 },
   ];
   return (
-    <div style={{ background: C.white, borderRadius: 20, padding: "20px 18px", marginBottom: 16, textAlign: "center", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+    <div style={{ background: C.surface, borderRadius: 20, padding: "20px 18px", marginBottom: 16, textAlign: "center", boxShadow: `0 2px 12px ${C.shadowSm}` }}>
       <p style={{ color: C.dark, fontSize: 15, fontWeight: 700, fontFamily: FONT_SERIF, margin: "0 0 6px" }}>Mon ADN café</p>
       <p style={{ color: C.muted, fontSize: 12, margin: "0 0 16px", lineHeight: 1.5 }}>
         Notez 3 cafés pour faire apparaître votre profil de goût
@@ -327,7 +327,7 @@ function ProfilePage({ coffees, onOpen, user }) {
 
       {/* ── ADN de goût ────────────────────────────────────────────────── */}
       {radarData.length > 0 ? (
-        <div style={{ background: C.white, borderRadius: 20, padding: "18px", marginBottom: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+        <div style={{ background: C.surface, borderRadius: 20, padding: "18px", marginBottom: 16, boxShadow: `0 2px 12px ${C.shadowSm}` }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
             <p style={{ color: C.dark, fontSize: 15, fontWeight: 700, fontFamily: FONT_SERIF, margin: 0 }}>Mon ADN café</p>
             {archetype && (
@@ -385,7 +385,7 @@ function ProfilePage({ coffees, onOpen, user }) {
         background: "transparent", border: `1.5px solid ${C.light}`,
         borderRadius: 99, color: C.muted, fontSize: 13, fontWeight: 600,
         cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-        fontFamily: "'Inter', system-ui, sans-serif",
+        fontFamily: FONT_SANS,
         transition: `border-color 0.2s ${ease}`,
       }}
         onMouseEnter={e => e.currentTarget.style.borderColor = C.accent}
@@ -569,7 +569,7 @@ function FactCard() {
 
 function RoastScale() {
   return (
-    <div style={{ background: C.white, borderRadius: 20, padding: "18px 18px 16px", marginBottom: 20, boxShadow: `0 2px 12px rgba(0,0,0,0.06)` }}>
+    <div style={{ background: C.surface, borderRadius: 20, padding: "18px 18px 16px", marginBottom: 20, boxShadow: `0 2px 12px ${C.shadowSm}` }}>
       <p style={{ color: C.dark, fontSize: 14, fontWeight: 700, fontFamily: FONT_SERIF, margin: "0 0 14px" }}>La torréfaction en un coup d'œil</p>
       <div style={{ display: "flex", borderRadius: 10, overflow: "hidden", height: 28, marginBottom: 8 }}>
         {ROAST_LEVELS.map((r, i) => (
@@ -577,7 +577,7 @@ function RoastScale() {
             {i < ROAST_LEVELS.length - 1 && (
               <div style={{
                 position: "absolute", right: 0, top: 0, bottom: 0, width: 2,
-                background: `rgba(245,239,228,0.3)`,
+                background: `rgba(var(--c-bg-rgb),0.5)`,
               }}/>
             )}
           </div>
@@ -600,7 +600,7 @@ function ProductionChart() {
   useEffect(() => { const t = setTimeout(() => setAnimate(true), 100); return () => clearTimeout(t); }, []);
 
   return (
-    <div style={{ background: C.white, borderRadius: 20, padding: "18px 18px 14px", marginBottom: 24, boxShadow: `0 2px 12px rgba(0,0,0,0.06)` }}>
+    <div style={{ background: C.surface, borderRadius: 20, padding: "18px 18px 14px", marginBottom: 24, boxShadow: `0 2px 12px ${C.shadowSm}` }}>
       <p style={{ color: C.dark, fontSize: 14, fontWeight: 700, fontFamily: FONT_SERIF, margin: "0 0 14px" }}>Top 5 pays producteurs</p>
       {PRODUCERS.map((p, i) => (
         <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>

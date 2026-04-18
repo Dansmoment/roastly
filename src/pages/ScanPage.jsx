@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
-import { C, FONT_SERIF, ease, spring } from '../lib/constants';
+import { C, FONT_SERIF, FONT_SANS, ease, spring } from '../lib/constants';
 import { Stars } from '../components/Atoms';
 import * as api from '../lib/api';
 
@@ -143,7 +143,7 @@ export function ScanPage({ onFound, onNotFound, user }) {
         display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center",
         padding: "0 36px",
-        fontFamily: "'Inter', system-ui, sans-serif",
+        fontFamily: FONT_SANS,
       }}>
         {/* Camera icon */}
         <div style={{
