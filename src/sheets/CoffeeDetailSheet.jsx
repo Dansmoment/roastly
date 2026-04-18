@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { C, FONT_SERIF, ease, spring } from '../lib/constants';
 import { Stars, Pill, LabelBadge, BackBtn, Section, FadeIn } from '../components/Atoms';
+import { CoffeeIllustration } from '../components/CoffeeIllustration';
 import { RadarChart, CarbonArc } from '../components/Charts';
 import * as api from '../lib/api';
 
@@ -110,7 +111,9 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
             <div style={{ position:"absolute", inset:"-20px -1px", background:`linear-gradient(145deg, ${g[0]}, ${g[1]})`, transform:`translateY(${parallaxOffset}px)`, transition:"transform 0.05s linear" }}>
               <div style={{ position:"absolute", top:-40, right:-30, width:180, height:180, borderRadius:"50%", background:"rgba(255,255,255,0.07)" }}/>
               <div style={{ position:"absolute", bottom:-20, left:20, width:120, height:120, borderRadius:"50%", background:"rgba(255,255,255,0.05)" }}/>
-              <div style={{ position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-54%)", fontSize:80 }}>{coffee.emoji}</div>
+              <div style={{ position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-54%)" }}>
+                <CoffeeIllustration emoji={coffee.emoji} size={110}/>
+              </div>
             </div>
             <div style={{ position:"absolute", bottom:0, left:0, right:0, height:80, background:`linear-gradient(transparent, ${C.bg})` }}/>
           </div>
@@ -168,11 +171,27 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
                 <p style={{ fontSize:14, opacity:0.75, margin:"0 0 16px" }}>{coffee.origin_country}</p>
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
                   {[
-                    { icon:"⛰️", label:"Altitude", val:coffee.altitude },
-                    { icon:"🌿", label:"Récolte", val:coffee.harvest },
+                    {
+                      icon: (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M3 20 L12 4 L21 20 Z"/><path d="M7 20 L12 12 L17 20"/>
+                        </svg>
+                      ),
+                      label:"Altitude", val:coffee.altitude
+                    },
+                    {
+                      icon: (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.8" strokeLinecap="round">
+                          <path d="M12 22 Q12 14 12 6"/><path d="M12 16 Q7 14 5 10"/><path d="M12 11 Q17 9 19 5"/>
+                          <ellipse cx="5.5" cy="8.5" rx="4" ry="2.5" transform="rotate(-30 5.5 8.5)" fill="rgba(255,255,255,0.2)" strokeWidth="1.2"/>
+                          <ellipse cx="18.5" cy="4.5" rx="4" ry="2.5" transform="rotate(-30 18.5 4.5)" fill="rgba(255,255,255,0.2)" strokeWidth="1.2"/>
+                        </svg>
+                      ),
+                      label:"Récolte", val:coffee.harvest
+                    },
                   ].map(i => (
                     <div key={i.label} style={{ background:"rgba(255,255,255,0.12)", borderRadius:14, padding:12 }}>
-                      <p style={{ fontSize:18, margin:"0 0 4px" }}>{i.icon}</p>
+                      <div style={{ marginBottom:4 }}>{i.icon}</div>
                       <p style={{ fontSize:11, opacity:0.7, margin:"0 0 2px" }}>{i.label}</p>
                       <p style={{ fontSize:13, fontWeight:700, margin:0 }}>{i.val || "—"}</p>
                     </div>

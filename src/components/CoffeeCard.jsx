@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { C, FONT_SERIF, ease, spring } from '../lib/constants';
 import { FadeIn, Stars, Pill } from './Atoms';
+import { CoffeeIllustration } from './CoffeeIllustration';
 
 export function CoffeeCard({ coffee, onOpen, index = 0 }) {
   const [pressed, setPressed] = useState(false);
@@ -17,9 +18,9 @@ export function CoffeeCard({ coffee, onOpen, index = 0 }) {
         }}>
         <div style={{ width:54, height:54, borderRadius:18, flexShrink:0,
           background:`linear-gradient(145deg, ${coffee.gradient[0]}, ${coffee.gradient[1]})`,
-          display:"flex", alignItems:"center", justifyContent:"center", fontSize:26,
+          display:"flex", alignItems:"center", justifyContent:"center",
           boxShadow:`0 4px 14px ${coffee.gradient[0]}55` }}>
-          {coffee.emoji}
+          <CoffeeIllustration emoji={coffee.emoji} size={34}/>
         </div>
         <div style={{ flex:1, minWidth:0 }}>
           <p style={{ color:C.dark, fontWeight:600, fontSize:16, margin:"0 0 2px",
@@ -49,7 +50,12 @@ export function TopRatedCarousel({ coffees, onOpen }) {
   return (
     <div style={{ marginBottom: 24 }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-        <p style={{ color:C.dark, fontWeight:600, fontSize:19, fontFamily:FONT_SERIF, letterSpacing:-0.1, margin:0 }}>⭐ Mieux notés</p>
+        <p style={{ color:C.dark, fontWeight:600, fontSize:19, fontFamily:FONT_SERIF, letterSpacing:-0.1, margin:0, display:"flex", alignItems:"center", gap:7 }}>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill={C.accent}>
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+          </svg>
+          Mieux notés
+        </p>
         <span style={{ color:C.muted, fontSize:12 }}>{sorted.length} cafés</span>
       </div>
       <div style={{ display:"flex", gap:12, overflowX:"auto", paddingBottom:6,
@@ -77,8 +83,8 @@ function CarouselCard({ coffee, onOpen }) {
       }}>
       <div style={{ height:90, background:`linear-gradient(145deg, ${coffee.gradient[0]}, ${coffee.gradient[1]})`,
         display:"flex", alignItems:"center", justifyContent:"center",
-        fontSize:44, position:"relative" }}>
-        {coffee.emoji}
+        position:"relative" }}>
+        <CoffeeIllustration emoji={coffee.emoji} size={58}/>
         <div style={{ position:"absolute", top:8, right:8, background:"rgba(44,62,53,0.06)",
           backdropFilter:"blur(6px)", borderRadius:99, padding:"3px 8px",
           display:"flex", alignItems:"center", gap:3 }}>
