@@ -27,8 +27,11 @@ const FULLSCREEN = {
   overflow: "hidden",
 };
 
+const CAMERA_ASKED_KEY = 'roastly_camera_asked';
+
 export function ScanPage({ onFound, onNotFound, user }) {
-  const [phase, setPhase] = useState("intro"); // intro | scanning | loading | found | not_found | error
+  const cameraAlreadyAsked = localStorage.getItem(CAMERA_ASKED_KEY);
+  const [phase, setPhase] = useState(cameraAlreadyAsked ? "intro" : "permission"); // permission | intro | scanning | loading | found | not_found | error
   const [logoVisible, setLogoVisible] = useState(false);
   const [foundCoffee, setFoundCoffee] = useState(null);
   const [lastEAN, setLastEAN] = useState("");
@@ -39,13 +42,21 @@ export function ScanPage({ onFound, onNotFound, user }) {
 
   // Intro: animate logo in, then launch camera after 2s
   useEffect(() => {
+    if (phase !== "intro") return;
     mountedRef.current = true;
     const t1 = setTimeout(() => setLogoVisible(true), 80);
     const t2 = setTimeout(() => { if (mountedRef.current) setPhase("scanning"); }, 2000);
     return () => {
-      mountedRef.current = false;
       clearTimeout(t1);
       clearTimeout(t2);
+    };
+  }, [phase]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
       stopScanner();
     };
   }, []);
@@ -123,6 +134,81 @@ export function ScanPage({ onFound, onNotFound, user }) {
     setOffData(null);
     setPhase("scanning");
   }, [stopScanner]);
+
+  // ── PERMISSION ───────────────────────────────────────────────────────────
+  if (phase === "permission") {
+    return (
+      <div style={{
+        ...FULLSCREEN, background: C.primary,
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center",
+        padding: "0 36px",
+        fontFamily: "'Inter', system-ui, sans-serif",
+      }}>
+        {/* Camera icon */}
+        <div style={{
+          width: 90, height: 90, borderRadius: "50%",
+          background: `${C.accent}20`, border: `2px solid ${C.accent}55`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          marginBottom: 28,
+          animation: `popIn 0.6s cubic-bezier(0.34,1.2,0.64,1) both`,
+        }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+        </div>
+
+        <p style={{
+          color: "white", fontWeight: 700, fontSize: 26,
+          fontFamily: FONT_SERIF, textAlign: "center",
+          margin: "0 0 12px", letterSpacing: "-0.3px",
+          animation: `slideUp 0.4s ${ease} 0.15s both`,
+        }}>Accès à la caméra</p>
+
+        <p style={{
+          color: "rgba(255,255,255,0.5)", fontSize: 15, textAlign: "center",
+          lineHeight: 1.65, margin: "0 0 40px",
+          animation: `slideUp 0.4s ${ease} 0.2s both`,
+        }}>
+          Roastly a besoin de votre caméra pour scanner les codes-barres des paquets de café.
+        </p>
+
+        <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12, animation: `slideUp 0.4s ${ease} 0.25s both` }}>
+          <button onClick={() => {
+            localStorage.setItem(CAMERA_ASKED_KEY, '1');
+            setPhase("intro");
+          }} style={{
+            background: C.accent, border: "none",
+            borderRadius: 99, padding: "16px 32px",
+            color: "white", fontSize: 16, fontWeight: 700,
+            cursor: "pointer", width: "100%",
+            boxShadow: `0 8px 24px ${C.accent}44`,
+          }}>
+            Autoriser la caméra
+          </button>
+
+          <p style={{
+            color: "rgba(255,255,255,0.25)", fontSize: 12,
+            textAlign: "center", margin: "4px 0 0", lineHeight: 1.5,
+          }}>
+            La caméra n'est utilisée que pendant le scan.
+          </p>
+        </div>
+
+        <style>{`
+          @keyframes popIn {
+            from { opacity: 0; transform: scale(0.7); }
+            to   { opacity: 1; transform: scale(1); }
+          }
+          @keyframes slideUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   // ── INTRO ────────────────────────────────────────────────────────────────
   if (phase === "intro") {

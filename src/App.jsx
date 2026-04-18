@@ -10,6 +10,7 @@ import { NotFoundSheet } from './sheets/NotFoundSheet';
 import { AuthSheet } from './sheets/AuthSheet';
 import { SettingsSheet, HelpSheet, AboutSheet, ProfileMenuSheet } from './sheets/UtilitySheets';
 import { SplashScreen } from './components/SplashScreen';
+import { OnboardingScreen } from './components/OnboardingScreen';
 import { SkeletonList } from './components/Atoms';
 
 const TAB_ORDER = ["search", "scan", "bag"];
@@ -84,6 +85,7 @@ function TabIcon({ type, active }) {
 
 export default function App() {
   const [splash, setSplash] = useState(true);
+  const [onboarding, setOnboarding] = useState(() => !localStorage.getItem('roastly_onboarded'));
   const [tab, setTab] = useState("search");
   const [slideDir, setSlideDir] = useState("right");
   const [user, setUser] = useState(null);
@@ -158,6 +160,9 @@ export default function App() {
     <>
       {/* ── Splash screen ────────────────────────────────────────────── */}
       {splash && <SplashScreen onDone={() => setSplash(false)} />}
+
+      {/* ── Onboarding ──────────────────────────────────────────────── */}
+      {onboarding && !splash && <OnboardingScreen onDone={() => setOnboarding(false)} />}
 
       {/* ── Bouton × scanner — rendu hors de tout containing block transformé ── */}
       {tab === "scan" && !splash && (
