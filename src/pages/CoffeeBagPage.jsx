@@ -215,41 +215,271 @@ function ProfilePage({ coffees, onOpen, user }) {
   );
 }
 
+const COFFEE_FACTS = [
+  { stat: "2.5 Md", unit: "tasses par jour", detail: "consommées dans le monde entier", color: C.accent },
+  { stat: "70+", unit: "pays producteurs", detail: "du Brésil à l'Éthiopie, en passant par le Yemen", color: C.roast },
+  { stat: "60", unit: "espèces de caféier", detail: "mais seulement 2 dominent le commerce mondial", color: "#4A7C59" },
+  { stat: "3ème", unit: "boisson mondiale", detail: "après l'eau et le thé, le café est partout", color: "#5C6BC0" },
+];
+
+const ROAST_LEVELS = [
+  { label: "Blonde", hex: "#E8C47A", notes: "Fruité · Floral" },
+  { label: "Légère", hex: "#C89448", notes: "Acidité vive" },
+  { label: "Médium", hex: "#8B5E2A", notes: "Équilibré" },
+  { label: "Foncée", hex: "#4A2C10", notes: "Chocolaté" },
+  { label: "Espresso", hex: "#1A0A04", notes: "Intense · Amer" },
+];
+
+const PRODUCERS = [
+  { flag: "🇧🇷", country: "Brésil",     pct: 38 },
+  { flag: "🇻🇳", country: "Vietnam",    pct: 18 },
+  { flag: "🇨🇴", country: "Colombie",   pct: 11 },
+  { flag: "🇮🇩", country: "Indonésie",  pct: 8  },
+  { flag: "🇪🇹", country: "Éthiopie",   pct: 7  },
+];
+
+const TOPIC_CARDS = [
+  {
+    title: "Les origines",
+    sub: "Terroirs & géographie",
+    min: "5 min",
+    grad: ["#2E7D32", "#1B5E20"],
+    articleIdx: 0,
+    Illustration: () => (
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="24" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5"/>
+        <ellipse cx="32" cy="32" rx="10" ry="24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
+        <line x1="8" y1="32" x2="56" y2="32" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
+        <circle cx="22" cy="26" r="3.5" fill="rgba(255,255,255,0.8)"/>
+        <circle cx="38" cy="36" r="2.5" fill="rgba(255,255,255,0.6)"/>
+        <circle cx="30" cy="42" r="2" fill="rgba(255,255,255,0.5)"/>
+      </svg>
+    ),
+  },
+  {
+    title: "Torréfaction",
+    sub: "De blonde à espresso",
+    min: "4 min",
+    grad: ["#C47A2A", "#7A3E1E"],
+    articleIdx: 1,
+    Illustration: () => (
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <ellipse cx="32" cy="44" rx="14" ry="5" fill="rgba(255,255,255,0.15)"/>
+        <path d="M24 44 Q22 32 26 22 Q32 10 38 22 Q42 32 40 44 Z" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+        <path d="M32 38 Q29 28 32 18" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round"/>
+        <circle cx="32" cy="15" r="2.5" fill="rgba(255,255,255,0.9)"/>
+        <path d="M26 30 Q30 26 34 30" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  {
+    title: "Spécialité",
+    sub: "Qu'est-ce qui fait la différence ?",
+    min: "6 min",
+    grad: ["#4B6CB7", "#182848"],
+    articleIdx: 2,
+    Illustration: () => (
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <path d="M32 12 L35.5 22.5 L47 22.5 L37.5 29 L41 40 L32 33.5 L23 40 L26.5 29 L17 22.5 L28.5 22.5 Z" fill="rgba(255,255,255,0.85)" opacity="0.9"/>
+        <path d="M32 18 L34.2 24.5 L41 24.5 L35.5 28.5 L37.5 35 L32 31.5 L26.5 35 L28.5 28.5 L23 24.5 L29.8 24.5 Z" fill="rgba(255,255,255,0.2)"/>
+      </svg>
+    ),
+  },
+  {
+    title: "Équitable",
+    sub: "Fair Trade & labels",
+    min: "7 min",
+    grad: ["#00897B", "#004D40"],
+    articleIdx: 3,
+    Illustration: () => (
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <path d="M20 36 Q20 28 32 26 Q44 28 44 36 L44 46 Q44 50 32 50 Q20 50 20 46 Z" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
+        <path d="M24 36 L30 42 L42 28" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="32" cy="22" r="7" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5"/>
+        <path d="M29 22 L31.5 24.5 L36 19" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    title: "Préparation",
+    sub: "Espresso, filtre, cold brew…",
+    min: "8 min",
+    grad: ["#37474F", "#102027"],
+    articleIdx: 4,
+    Illustration: () => (
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <path d="M20 28 L22 48 Q22 50 26 50 L38 50 Q42 50 42 48 L44 28 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeLinejoin="round"/>
+        <path d="M44 34 Q50 34 50 39 Q50 44 44 44" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.8" strokeLinecap="round"/>
+        <ellipse cx="32" cy="28" rx="12" ry="3" fill="rgba(255,255,255,0.6)"/>
+        <path d="M27 28 Q30 24.5 32 28 Q34 31.5 37 28" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" strokeLinecap="round"/>
+        <path d="M27 20 Q26 17 27 14" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
+        <path d="M32 19 Q31 16 32 13" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
+        <path d="M37 20 Q36 17 37 14" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  {
+    title: "Empreinte",
+    sub: "L'impact carbone du café",
+    min: "5 min",
+    grad: ["#558B2F", "#1B5E20"],
+    articleIdx: 5,
+    Illustration: () => (
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <path d="M32 48 Q20 40 20 28 Q20 16 32 14" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeLinecap="round"/>
+        <path d="M32 48 Q44 40 44 28 Q44 16 32 14" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeLinecap="round"/>
+        <line x1="32" y1="14" x2="32" y2="52" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
+        <path d="M26 22 Q32 18 38 22" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round"/>
+        <path d="M24 30 Q32 26 40 30" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
+        <path d="M25 38 Q32 34 39 38" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+];
+
+function FactCard() {
+  const [idx, setIdx] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const f = COFFEE_FACTS[idx];
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setIdx(i => (i + 1) % COFFEE_FACTS.length);
+        setVisible(true);
+      }, 300);
+    }, 4000);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <div style={{
+      background: C.primary, borderRadius: 20, padding: "20px 22px",
+      marginBottom: 20, position: "relative", overflow: "hidden",
+    }}>
+      <div style={{
+        position: "absolute", top: -20, right: -20, width: 100, height: 100,
+        borderRadius: "50%", background: `${f.color}20`,
+      }}/>
+      <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1.2, margin: "0 0 10px" }}>Le saviez-vous ?</p>
+      <div style={{ opacity: visible ? 1 : 0, transition: "opacity 0.3s ease" }}>
+        <p style={{ color: f.color, fontSize: 42, fontWeight: 800, fontFamily: FONT_SERIF, margin: "0 0 2px", letterSpacing: -1 }}>{f.stat}</p>
+        <p style={{ color: "white", fontSize: 15, fontWeight: 600, margin: "0 0 4px" }}>{f.unit}</p>
+        <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, margin: 0 }}>{f.detail}</p>
+      </div>
+      <div style={{ display: "flex", gap: 5, marginTop: 16 }}>
+        {COFFEE_FACTS.map((_, i) => (
+          <div key={i} onClick={() => setIdx(i)} style={{
+            height: 3, borderRadius: 99, cursor: "pointer",
+            width: i === idx ? 18 : 6,
+            background: i === idx ? f.color : "rgba(255,255,255,0.2)",
+            transition: "all 0.3s ease",
+          }}/>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RoastScale() {
+  return (
+    <div style={{ background: C.white, borderRadius: 20, padding: "18px 18px 16px", marginBottom: 20, boxShadow: `0 2px 12px rgba(0,0,0,0.06)` }}>
+      <p style={{ color: C.dark, fontSize: 14, fontWeight: 700, fontFamily: FONT_SERIF, margin: "0 0 14px" }}>La torréfaction en un coup d'œil</p>
+      <div style={{ display: "flex", borderRadius: 10, overflow: "hidden", height: 28, marginBottom: 8 }}>
+        {ROAST_LEVELS.map((r, i) => (
+          <div key={i} style={{ flex: 1, background: r.hex, position: "relative" }}>
+            {i < ROAST_LEVELS.length - 1 && (
+              <div style={{
+                position: "absolute", right: 0, top: 0, bottom: 0, width: 2,
+                background: `rgba(245,239,228,0.3)`,
+              }}/>
+            )}
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex" }}>
+        {ROAST_LEVELS.map((r, i) => (
+          <div key={i} style={{ flex: 1, textAlign: "center" }}>
+            <p style={{ fontSize: 9, fontWeight: 700, color: C.dark, margin: "0 0 1px", letterSpacing: 0.2 }}>{r.label}</p>
+            <p style={{ fontSize: 8, color: C.muted, margin: 0, lineHeight: 1.3 }}>{r.notes}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProductionChart() {
+  const [animate, setAnimate] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setAnimate(true), 100); return () => clearTimeout(t); }, []);
+
+  return (
+    <div style={{ background: C.white, borderRadius: 20, padding: "18px 18px 14px", marginBottom: 24, boxShadow: `0 2px 12px rgba(0,0,0,0.06)` }}>
+      <p style={{ color: C.dark, fontSize: 14, fontWeight: 700, fontFamily: FONT_SERIF, margin: "0 0 14px" }}>Top 5 pays producteurs</p>
+      {PRODUCERS.map((p, i) => (
+        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+          <span style={{ fontSize: 15, width: 22 }}>{p.flag}</span>
+          <span style={{ fontSize: 11, color: C.muted, width: 58, flexShrink: 0 }}>{p.country}</span>
+          <div style={{ flex: 1, height: 8, background: C.light, borderRadius: 99, overflow: "hidden" }}>
+            <div style={{
+              height: "100%", borderRadius: 99,
+              background: `linear-gradient(90deg, ${C.accent}, ${C.copper})`,
+              width: animate ? `${(p.pct / 38) * 100}%` : "0%",
+              transition: `width 0.7s cubic-bezier(0.4,0,0.2,1) ${i * 80}ms`,
+            }}/>
+          </div>
+          <span style={{ fontSize: 11, fontWeight: 700, color: C.accent, width: 28, textAlign: "right" }}>{p.pct}%</span>
+        </div>
+      ))}
+      <p style={{ color: C.muted, fontSize: 10, margin: "10px 0 0", textAlign: "right" }}>Source : ICO 2023</p>
+    </div>
+  );
+}
+
 function LearnPage({ onOpenArticle }) {
   return (
     <div>
-      <div style={{ background:`linear-gradient(135deg, ${C.roast}, ${C.primary})`,
-        borderRadius:24, padding:"22px 20px", marginBottom:24 }}>
-        <p style={{ color:"rgba(255,255,255,0.65)", fontSize:13, marginBottom:4 }}>Tout savoir sur</p>
-        <p style={{ color:"white", fontSize:26, fontWeight:600, marginBottom:4, fontFamily:FONT_SERIF }}>Le monde du café.</p>
-        <p style={{ color:"rgba(255,255,255,0.6)", fontSize:13 }}>6 guides pour tout comprendre</p>
+      <div style={{ marginBottom: 22 }}>
+        <p style={{ color: C.muted, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1.2, margin: "0 0 6px" }}>Encyclopédie</p>
+        <p style={{ fontFamily: FONT_SERIF, fontSize: 28, fontWeight: 700, color: C.primary, margin: "0 0 4px", letterSpacing: -0.5 }}>Le monde du café.</p>
+        <p style={{ color: C.muted, fontSize: 13, margin: 0 }}>Explorez les origines, les méthodes et les saveurs.</p>
       </div>
 
-      <div onClick={() => onOpenArticle(ARTICLES[0])} style={{
-        background:`linear-gradient(135deg, ${C.accent}, ${C.primary})`,
-        borderRadius:22, padding:22, marginBottom:20, cursor:"pointer",
-      }}>
-        <p style={{ color:"rgba(255,255,255,0.7)", fontSize:11, fontWeight:600, textTransform:"uppercase", letterSpacing:1, margin:"0 0 6px" }}>À la une</p>
-        <p style={{ color:"white", fontSize:22, fontWeight:600, margin:"0 0 4px", fontFamily:FONT_SERIF }}>{ARTICLES[0].title}</p>
-        <p style={{ color:"rgba(255,255,255,0.75)", fontSize:13, margin:"0 0 14px" }}>{ARTICLES[0].desc}</p>
-        <span style={{ color:"rgba(255,255,255,0.65)", fontSize:12 }}>⏱ {ARTICLES[0].min} de lecture</span>
-      </div>
+      <FactCard />
+      <RoastScale />
+      <ProductionChart />
 
-      {ARTICLES.slice(1).map((a, i) => (
-        <FadeIn key={i} delay={i * 40}>
-          <div onClick={() => onOpenArticle(a)} style={{
-            display:"flex", gap:18, alignItems:"flex-start",
-            padding:"18px 0", borderBottom:`1px solid ${C.light}`, cursor:"pointer",
-          }}>
-            <span style={{ fontSize:30, flexShrink:0, lineHeight:1, marginTop:2 }}>{a.icon}</span>
-            <div style={{ flex:1 }}>
-              <p style={{ fontWeight:600, color:C.dark, fontSize:16, margin:"0 0 4px", fontFamily:FONT_SERIF, letterSpacing:-0.1 }}>{a.title}</p>
-              <p style={{ color:C.muted, fontSize:12, margin:"0 0 6px" }}>{a.desc}</p>
-              <span style={{ color:C.accent, fontSize:12, fontWeight:500 }}>⏱ {a.min} de lecture</span>
-            </div>
-          </div>
-        </FadeIn>
-      ))}
+      <p style={{ color: C.dark, fontSize: 14, fontWeight: 700, fontFamily: FONT_SERIF, margin: "0 0 14px" }}>Guides & articles</p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 32 }}>
+        {TOPIC_CARDS.map((card, i) => {
+          const { Illustration } = card;
+          return (
+            <FadeIn key={i} delay={i * 50}>
+              <div onClick={() => onOpenArticle(ARTICLES[card.articleIdx])} style={{
+                background: `linear-gradient(145deg, ${card.grad[0]}, ${card.grad[1]})`,
+                borderRadius: 18, padding: "16px 14px 14px",
+                cursor: "pointer", minHeight: 160,
+                display: "flex", flexDirection: "column", justifyContent: "space-between",
+                boxShadow: `0 4px 16px ${card.grad[1]}44`,
+                transition: "transform 0.15s ease",
+              }}
+                onMouseDown={e => e.currentTarget.style.transform = "scale(0.97)"}
+                onMouseUp={e => e.currentTarget.style.transform = "scale(1)"}
+                onTouchStart={e => e.currentTarget.style.transform = "scale(0.97)"}
+                onTouchEnd={e => e.currentTarget.style.transform = "scale(1)"}
+              >
+                <Illustration />
+                <div>
+                  <p style={{ color: "white", fontWeight: 700, fontSize: 13, fontFamily: FONT_SERIF, margin: "0 0 2px", letterSpacing: -0.1 }}>{card.title}</p>
+                  <p style={{ color: "rgba(255,255,255,0.55)", fontSize: 10, margin: "0 0 6px", lineHeight: 1.3 }}>{card.sub}</p>
+                  <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 10 }}>⏱ {card.min}</span>
+                </div>
+              </div>
+            </FadeIn>
+          );
+        })}
+      </div>
     </div>
   );
 }
