@@ -61,14 +61,36 @@ export function CoffeeBagPage({ coffees, onOpen, user }) {
         <div style={{ width:36, height:4, background:C.light, borderRadius:99, margin:"0 auto 22px" }}/>
         {learnArticle && <>
           <p style={{ fontSize:40, margin:"0 0 10px" }}>{learnArticle.icon}</p>
-          <p style={{ color:C.dark, fontWeight:800, fontSize:20, margin:"0 0 4px", fontFamily:FONT_SERIF }}>{learnArticle.title}</p>
-          <p style={{ color:C.muted, fontSize:12, margin:"0 0 18px" }}>⏱ {learnArticle.min} de lecture</p>
-          <p style={{ color:C.text, fontSize:14, lineHeight:1.75 }}>
-            {learnArticle.desc}. Ce guide détaillé vous expliquera tout ce que vous devez savoir. Le contenu complet sera disponible dans la version finale de Roastly.
-          </p>
-          <div style={{ background:C.light, borderRadius:14, padding:16, marginTop:20, textAlign:"center" }}>
-            <p style={{ color:C.muted, fontSize:13, margin:0 }}>📝 Contenu en cours de rédaction</p>
-          </div>
+          <p style={{ color:C.dark, fontWeight:800, fontSize:22, margin:"0 0 4px", fontFamily:FONT_SERIF, letterSpacing:-0.3 }}>{learnArticle.title}</p>
+          <p style={{ color:C.muted, fontSize:12, margin:"0 0 20px" }}>⏱ {learnArticle.min} de lecture</p>
+
+          {/* Key facts chips */}
+          {learnArticle.keyFacts && (
+            <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:22 }}>
+              {learnArticle.keyFacts.map((f, i) => (
+                <div key={i} style={{
+                  background:C.accent08, border:`1px solid ${C.accent19}`,
+                  borderRadius:12, padding:"9px 14px",
+                  color:C.text, fontSize:13, fontWeight:500, lineHeight:1.4,
+                }}>
+                  {f}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Sections */}
+          {learnArticle.sections ? learnArticle.sections.map((s, i) => (
+            <div key={i} style={{ marginBottom:22 }}>
+              <p style={{
+                color:C.dark, fontWeight:700, fontSize:15,
+                fontFamily:FONT_SERIF, margin:"0 0 8px", letterSpacing:-0.1,
+              }}>{s.title}</p>
+              <p style={{ color:C.text, fontSize:13, lineHeight:1.78, margin:0 }}>{s.body}</p>
+            </div>
+          )) : (
+            <p style={{ color:C.text, fontSize:13, lineHeight:1.78 }}>{learnArticle.desc}.</p>
+          )}
         </>}
       </div>
     </div>
