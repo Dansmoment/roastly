@@ -149,6 +149,7 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user, onOpenAuth, 
               </div>
               <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:12 }}>
                 {(coffee.labels || []).map(l => <LabelBadge key={l} label={l}/>)}
+                {coffee.variety && <Pill bg={C.primary08} color={C.primary}>{coffee.variety}</Pill>}
                 <Pill bg={C.light} color={C.primary}>Torréfaction {coffee.roast_level}</Pill>
               </div>
               {coffee.ean && <p style={{ color:C.muted, fontSize:11, marginTop:8, fontFamily:"monospace" }}>EAN {coffee.ean}</p>}

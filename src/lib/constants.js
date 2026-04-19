@@ -53,6 +53,44 @@ export const BREW_OPTIONS = ["Espresso", "Filtre", "AeroPress", "Chemex", "V60",
 export const GRADIENTS = [["#C47A2A","#D49040"],["#1A0F07","#3A1E0C"],["#0E0804","#1A0F07"],["#7A3E1E","#C47A2A"],["#D49040","#C47A2A"]];
 export const EMOJIS = ["☕","🫘","🌿","🍂","✨","🌸","🍫","🫐","🔥","🌍"];
 
+export const VARIETY_OPTIONS = ["Arabica", "Robusta", "Autre"];
+
+export function computeCarbonScore({ country = "", labels = [], roast = "", altitude = "", variety = "" }) {
+  let score = 50;
+
+  // Origine
+  if (["Éthiopie","Rwanda","Ouganda","Yémen","Burundi"].includes(country)) score += 10;
+  else if (["Colombie","Pérou","Bolivie","Guatemala","Costa Rica","Honduras","Mexique","Panama","Kenya","Tanzanie"].includes(country)) score += 5;
+  else if (country === "Vietnam") score -= 10;
+
+  // Labels
+  if (labels.includes("Bio"))                 score += 15;
+  if (labels.includes("Rainforest Alliance")) score += 8;
+  if (labels.includes("Direct Trade"))        score += 5;
+  if (labels.includes("Fair Trade"))          score += 3;
+
+  // Torréfaction
+  if (["Blonde","Légère"].includes(roast))    score += 3;
+  else if (roast === "Légère-Médium")         score += 2;
+  else if (roast === "Médium-Foncée")         score -= 2;
+  else if (roast === "Foncée")                score -= 5;
+
+  // Altitude
+  const altMatch = altitude.match(/\d+/);
+  if (altMatch) {
+    const alt = parseInt(altMatch[0], 10);
+    if (alt >= 1800)      score += 8;
+    else if (alt >= 1500) score += 5;
+    else if (alt < 1000)  score -= 8;
+  }
+
+  // Variété
+  if (variety === "Arabica")      score += 8;
+  else if (variety === "Robusta") score -= 8;
+
+  return Math.max(0, Math.min(100, score));
+}
+
 export const ARTICLES = [
   { icon:"🌍", title:"Les grands pays producteurs", desc:"Tour du monde des terroirs café", min:"5 min" },
   { icon:"🔥", title:"La torréfaction expliquée", desc:"Blonde, medium, dark roast — les différences", min:"4 min" },

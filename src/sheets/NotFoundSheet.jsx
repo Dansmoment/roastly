@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { C, FONT_SERIF, ease, spring, ADD_STEPS, FLAVOR_TAGS, GRADIENTS, EMOJIS, ROAST_LEVELS, LABEL_OPTIONS, BREW_OPTIONS } from '../lib/constants';
+import { C, FONT_SERIF, ease, spring, ADD_STEPS, FLAVOR_TAGS, GRADIENTS, EMOJIS, ROAST_LEVELS, LABEL_OPTIONS, BREW_OPTIONS, VARIETY_OPTIONS, computeCarbonScore } from '../lib/constants';
 import { FormInput } from '../components/Atoms';
 import * as api from '../lib/api';
 
@@ -12,6 +12,7 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
   const [form, setForm] = useState({
     name: "", brand: "", ean: "", description: "", image_url: "",
     country: "", region: "", altitude: "", harvest: "",
+    variety: "Arabica",
     roast_level: "", labels: [], brewing_methods: [],
     tags: [],
   });
@@ -33,6 +34,7 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
         region: "",
         altitude: "",
         harvest: "",
+        variety: "Arabica",
         roast_level: "",
         labels: [],
         brewing_methods: [],
@@ -85,10 +87,13 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
       altitude: form.altitude || "—",
       harvest: form.harvest || "—",
       roast_level: form.roast_level || "Médium",
+      variety: form.variety || "Arabica",
       tags: form.tags.length ? form.tags : ["Nouveau"],
       labels: form.labels,
-      carbon_score: 50,
-      carbon_label: "Moyen",
+      carbon_score: computeCarbonScore({
+        country: form.country, labels: form.labels,
+        roast: form.roast_level, altitude: form.altitude, variety: form.variety,
+      }),
       description: form.description || `${form.name || "Café"} ajouté par la communauté Roastly.`,
       flavor_profile: buildFlavorProfile(form.tags),
       brewing_methods: form.brewing_methods.length ? form.brewing_methods : ["Filtre"],
@@ -235,6 +240,27 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
             <FormInput label="Région" value={form.region} onChange={v => setForm(f => ({ ...f, region: v }))} placeholder="ex. Sidamo, Yirgacheffe"/>
             <FormInput label="Altitude" value={form.altitude} onChange={v => setForm(f => ({ ...f, altitude: v }))} placeholder="ex. 1800-2200m"/>
             <FormInput label="Période de récolte" value={form.harvest} onChange={v => setForm(f => ({ ...f, harvest: v }))} placeholder="ex. Oct-Dec"/>
+            <div>
+              <p style={{ color: C.muted, fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Variété</p>
+              <div style={{ display: "flex", gap: 8 }}>
+                {VARIETY_OPTIONS.map(v => {
+                  const on = form.variety === v;
+                  const icons = { "Arabica": "🫘", "Robusta": "💪", "Autre": "🌿" };
+                  return (
+                    <button key={v} onClick={() => setForm(f => ({ ...f, variety: v }))} style={{
+                      flex: 1, border: `1.5px solid ${on ? C.primary : C.light}`, borderRadius: 14,
+                      padding: "10px 8px", fontSize: 13, fontWeight: on ? 700 : 500,
+                      background: on ? C.primary : C.bg, color: on ? C.white : C.muted,
+                      cursor: "pointer", transition: `all 0.18s ${ease}`,
+                      display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                    }}>
+                      <span style={{ fontSize: 18 }}>{icons[v]}</span>
+                      {v}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
             {/* Quick country chips */}
             <div>
@@ -402,6 +428,7 @@ export function NotFoundSheet({ visible, onClose, scannedEAN, offData, onAdd, us
               {form.brand && <RecapRow label="Marque" value={form.brand}/>}
               {form.country && <RecapRow label="Origine" value={`${getFlagEmoji(form.country)} ${form.country}${form.region ? ` · ${form.region}` : ""}`}/>}
               {form.altitude && <RecapRow label="Altitude" value={form.altitude}/>}
+              {form.variety && <RecapRow label="Variété" value={form.variety}/>}
               {form.roast_level && <RecapRow label="Torréfaction" value={form.roast_level}/>}
               {form.labels.length > 0 && <RecapRow label="Labels" value={form.labels.join(", ")}/>}
               {form.brewing_methods.length > 0 && <RecapRow label="Préparation" value={form.brewing_methods.join(", ")}/>}
