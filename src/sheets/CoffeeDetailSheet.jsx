@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { C, FONT_SERIF, ease, spring } from '../lib/constants';
+import { C, FONT_SERIF, FONT_SANS, ease, spring } from '../lib/constants';
 import { Stars, Pill, LabelBadge, BackBtn, Section, FadeIn } from '../components/Atoms';
 import { CoffeeIllustration } from '../components/CoffeeIllustration';
 import { RadarChart, CarbonArc } from '../components/Charts';
@@ -9,18 +9,22 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user, onOpenAuth, 
   const scrollRef = useRef(null);
   const [scrollY, setScrollY] = useState(0);
   const [myRating, setMyRating] = useState(0);
+  const [myComment, setMyComment] = useState("");
   const [hoverStar, setHoverStar] = useState(0);
   const [rated, setRated] = useState(false);
   const [isFav, setIsFav] = useState(false);
   const [favAnim, setFavAnim] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [communityReviews, setCommunityReviews] = useState([]);
 
   useEffect(() => {
     if (visible && coffee) {
-      setScrollY(0); setHoverStar(0); setSubmitting(false);
+      setScrollY(0); setHoverStar(0); setSubmitting(false); setMyComment("");
+      setCommunityReviews([]);
+      // Fetch reviews for this coffee
+      api.fetchReviews(coffee.id).then(setCommunityReviews).catch(() => {});
       if (user) {
-        // Load both fav state and existing review in parallel
         Promise.all([
           api.isFavorite(user.id, coffee.id),
           api.fetchUserReview(user.id, coffee.id),
@@ -28,6 +32,7 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user, onOpenAuth, 
           setIsFav(fav);
           if (review) {
             setMyRating(review.rating);
+            setMyComment(review.comment || "");
             setRated(true);
           } else {
             setMyRating(0);
@@ -74,7 +79,9 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user, onOpenAuth, 
     if (!user || !coffee || myRating === 0 || submitting) return;
     setSubmitting(true);
     try {
-      await api.addReview({ coffeeId: coffee.id, userId: user.id, rating: myRating, comment: "" });
+      await api.addReview({ coffeeId: coffee.id, userId: user.id, rating: myRating, comment: myComment.trim() });
+      // Refresh community reviews
+      api.fetchReviews(coffee.id).then(setCommunityReviews).catch(() => {});
       setRated(true);
       showToast?.("Note enregistrée ✓");
     } catch {
@@ -237,40 +244,91 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user, onOpenAuth, 
             </Section>
 
             <Section title="Votre avis">
-              <div style={{ textAlign:"center", padding:"8px 0" }}>
-                {!user && (
-                  <p style={{ color:C.muted, fontSize:13, marginBottom:12 }}>
+              <div style={{ padding:"4px 0" }}>
+                {!user ? (
+                  <p style={{ color:C.muted, fontSize:13, textAlign:"center" }}>
                     <span style={{ color:C.accent, fontWeight:600, cursor:"pointer" }} onClick={() => { onClose(); onOpenAuth?.(); }}>Connectez-vous</span> pour noter ce café
                   </p>
-                )}
-                <p style={{ color:C.muted, fontSize:13, marginBottom:16 }}>
-                  {user && rated ? "Votre note actuelle — cliquez pour modifier" : user ? "Comment l'avez-vous trouvé ?" : ""}
-                </p>
-                <div style={{ display:"flex", justifyContent:"center", gap:10, marginBottom:16 }}>
-                  {[1,2,3,4,5].map(s => (
-                    <button key={s}
-                      onMouseEnter={() => setHoverStar(s)} onMouseLeave={() => setHoverStar(0)}
-                      onClick={() => { setMyRating(s); setRated(false); }}
-                      style={{ background:"none", border:"none", cursor:"pointer", padding:2,
-                        transform: (hoverStar || myRating) >= s ? "scale(1.25)" : "scale(1)",
-                        transition:`transform 0.15s ${spring}` }}>
-                      <svg width="30" height="30" viewBox="0 0 24 24"
-                        fill={(hoverStar || myRating) >= s ? C.accent : C.light}
-                        style={{ transition:"fill 0.15s" }}>
-                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-                      </svg>
-                    </button>
-                  ))}
-                </div>
-                {user && !rated && myRating > 0 && (
-                  <button onClick={handleRate} disabled={submitting} style={{
-                    background: C.primary, color:"white", border:"none", borderRadius:99,
-                    padding:"11px 28px", fontSize:14, fontWeight:600, cursor:"pointer",
-                    opacity: submitting ? 0.6 : 1,
-                  }}>{submitting ? "Envoi..." : "Soumettre"}</button>
+                ) : (
+                  <>
+                    <p style={{ color:C.muted, fontSize:12, marginBottom:12, textAlign:"center" }}>
+                      {rated ? "Votre note — cliquez pour modifier" : "Comment l'avez-vous trouvé ?"}
+                    </p>
+                    <div style={{ display:"flex", justifyContent:"center", gap:10, marginBottom:14 }}>
+                      {[1,2,3,4,5].map(s => (
+                        <button key={s}
+                          onMouseEnter={() => setHoverStar(s)} onMouseLeave={() => setHoverStar(0)}
+                          onClick={() => { setMyRating(s); setRated(false); }}
+                          style={{ background:"none", border:"none", cursor:"pointer", padding:2,
+                            transform: (hoverStar || myRating) >= s ? "scale(1.25)" : "scale(1)",
+                            transition:`transform 0.15s ${spring}` }}>
+                          <svg width="30" height="30" viewBox="0 0 24 24"
+                            fill={(hoverStar || myRating) >= s ? C.accent : C.light}
+                            style={{ transition:"fill 0.15s" }}>
+                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                          </svg>
+                        </button>
+                      ))}
+                    </div>
+                    {myRating > 0 && (
+                      <textarea
+                        value={myComment}
+                        onChange={e => setMyComment(e.target.value)}
+                        placeholder="Partagez vos impressions... (optionnel)"
+                        rows={2}
+                        style={{
+                          width:"100%", border:`1.5px solid ${C.light}`, borderRadius:12,
+                          padding:"10px 12px", fontSize:13, color:C.text, background:C.surface,
+                          outline:"none", boxSizing:"border-box", fontFamily:"inherit",
+                          resize:"none", marginBottom:12,
+                        }}
+                      />
+                    )}
+                    {!rated && myRating > 0 && (
+                      <button onClick={handleRate} disabled={submitting} style={{
+                        background: C.primary, color:"white", border:"none", borderRadius:99,
+                        padding:"11px 28px", fontSize:14, fontWeight:600, cursor:"pointer",
+                        opacity: submitting ? 0.6 : 1, display:"block", margin:"0 auto",
+                      }}>{submitting ? "Envoi..." : "Soumettre"}</button>
+                    )}
+                  </>
                 )}
               </div>
             </Section>
+
+            {communityReviews.filter(r => r.comment).length > 0 && (
+              <Section title="Avis de la communauté">
+                <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+                  {communityReviews.filter(r => r.comment).slice(0, 5).map((r, i) => (
+                    <div key={r.id || i} style={{
+                      background: C.surface, borderRadius:14, padding:"12px 14px",
+                      border:`1px solid ${C.light}`,
+                    }}>
+                      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:6 }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                          <div style={{
+                            width:28, height:28, borderRadius:"50%",
+                            background:`linear-gradient(135deg, ${C.accent}, ${C.copper})`,
+                            display:"flex", alignItems:"center", justifyContent:"center",
+                            color:"white", fontSize:11, fontWeight:800,
+                          }}>
+                            {(r.profiles?.name || "?")?.[0]?.toUpperCase()}
+                          </div>
+                          <span style={{ color:C.text, fontSize:12, fontWeight:600 }}>
+                            {r.profiles?.name || "Anonyme"}
+                          </span>
+                        </div>
+                        <Stars rating={r.rating} size={11}/>
+                      </div>
+                      <p style={{ color:C.text, fontSize:13, lineHeight:1.6, margin:0 }}>{r.comment}</p>
+                      <p style={{ color:C.muted, fontSize:10, margin:"6px 0 0" }}>
+                        {new Date(r.created_at).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            )}
           </div>
         </div>
         <div style={{ position:"absolute", bottom:0, left:0, right:0 }}>
