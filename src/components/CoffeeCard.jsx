@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { C, FONT_SERIF, ease, spring } from '../lib/constants';
+import { C, FONT_SERIF, FONT_SANS, ease, spring } from '../lib/constants';
 import { FadeIn, Stars, Pill } from './Atoms';
 import { CoffeeIllustration } from './CoffeeIllustration';
 
@@ -69,6 +69,92 @@ export function TopRatedCarousel({ coffees, onOpen }) {
         ))}
       </div>
     </div>
+  );
+}
+
+export function WeeklyFeatured({ coffees, onOpen }) {
+  const [pressed, setPressed] = useState(false);
+  const eligible = [...coffees].filter(c => c.avg_rating >= 4).sort((a, b) => b.avg_rating - a.avg_rating);
+  if (eligible.length === 0) return null;
+  const weekIdx = Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000));
+  const coffee = eligible[weekIdx % eligible.length];
+  const g = coffee.gradient || [C.accent, C.copper];
+
+  return (
+    <FadeIn>
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:10 }}>
+          <span style={{ fontSize:14 }}>☕</span>
+          <p style={{ color:C.dark, fontWeight:600, fontSize:19, fontFamily:FONT_SERIF, letterSpacing:-0.1, margin:0 }}>
+            Coup de cœur
+          </p>
+          <span style={{
+            background: C.accent08, color: C.accent, fontSize:10, fontWeight:700,
+            borderRadius:99, padding:"2px 8px", letterSpacing:0.3,
+          }}>SEMAINE</span>
+        </div>
+        <div
+          onClick={() => onOpen(coffee)}
+          onMouseDown={() => setPressed(true)} onMouseUp={() => setPressed(false)}
+          onMouseLeave={() => setPressed(false)}
+          onTouchStart={() => setPressed(true)} onTouchEnd={() => setPressed(false)}
+          style={{
+            borderRadius:22, overflow:"hidden", cursor:"pointer",
+            boxShadow:`0 8px 28px ${g[0]}44`,
+            transform: pressed ? "scale(0.98)" : "scale(1)",
+            transition:`transform 0.18s ${spring}`,
+          }}
+        >
+          {/* Hero image or gradient */}
+          <div style={{
+            height:160, position:"relative", overflow:"hidden",
+            background:`linear-gradient(145deg, ${g[0]}, ${g[1]})`,
+          }}>
+            {coffee.image_url && (
+              <img src={coffee.image_url} alt={coffee.name} style={{ width:"100%", height:"100%", objectFit:"cover", opacity:0.85 }}/>
+            )}
+            {!coffee.image_url && (
+              <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", fontSize:72 }}>
+                {coffee.emoji}
+              </div>
+            )}
+            {/* Gradient overlay */}
+            <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%)" }}/>
+            {/* Rating badge */}
+            <div style={{
+              position:"absolute", top:12, right:12,
+              background:"rgba(0,0,0,0.45)", backdropFilter:"blur(8px)",
+              borderRadius:99, padding:"4px 10px",
+              display:"flex", alignItems:"center", gap:4,
+            }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill={C.accent}>
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+              </svg>
+              <span style={{ color:"white", fontWeight:800, fontSize:13, fontFamily:FONT_SERIF }}>{coffee.avg_rating}</span>
+            </div>
+            {/* Text overlay */}
+            <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"14px 16px" }}>
+              <p style={{ color:"white", fontWeight:700, fontSize:20, fontFamily:FONT_SERIF, margin:"0 0 3px", letterSpacing:-0.3, lineHeight:1.2 }}>
+                {coffee.name}
+              </p>
+              <p style={{ color:"rgba(255,255,255,0.65)", fontSize:12, margin:0, fontFamily:FONT_SANS }}>
+                {coffee.brand} · {coffee.origin_flag} {coffee.origin_country}
+              </p>
+            </div>
+          </div>
+          {/* Footer */}
+          <div style={{ background:C.bg, padding:"12px 16px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+            <div style={{ display:"flex", gap:5 }}>
+              {(coffee.tags||[]).slice(0,2).map(t => <Pill key={t} small>{t}</Pill>)}
+            </div>
+            <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+              <Stars rating={coffee.avg_rating} size={11}/>
+              <span style={{ color:C.muted, fontSize:11 }}>{coffee.review_count} avis</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </FadeIn>
   );
 }
 

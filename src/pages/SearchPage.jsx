@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { C, FONT_SERIF, FONT_SANS, ease } from '../lib/constants';
 import { FilterBar } from '../components/FilterBar';
-import { CoffeeCard, TopRatedCarousel } from '../components/CoffeeCard';
+import { CoffeeCard, TopRatedCarousel, WeeklyFeatured } from '../components/CoffeeCard';
 import { CoffeeIllustration } from '../components/CoffeeIllustration';
 
 export function SearchPage({ coffees, onOpen, onNotFound, onOpenCGU, onOpenPrivacy, onOpenLegal }) {
@@ -122,10 +122,12 @@ export function SearchPage({ coffees, onOpen, onNotFound, onOpenCGU, onOpenPriva
       <FilterBar active={filter} onSelect={setFilter}/>
 
       <div style={{
-        maxHeight: isExploring ? 280 : 0, overflow:"hidden",
+        maxHeight: isExploring ? 600 : 0, overflow:"hidden",
         opacity: isExploring ? 1 : 0,
         transition:`max-height 0.35s ${ease}, opacity 0.25s ${ease}`,
+        pointerEvents: isExploring ? "auto" : "none",
       }}>
+        <WeeklyFeatured coffees={coffees} onOpen={onOpen}/>
         <TopRatedCarousel coffees={coffees} onOpen={onOpen}/>
       </div>
 

@@ -492,6 +492,25 @@ function ProfilePage({ coffees, onOpen, user }) {
         </div>
       )}
 
+      {/* ── Favoris vide ────────────────────────────────────────────────── */}
+      {favoriteCoffees.length === 0 && stats.reviews > 0 && (
+        <div style={{
+          background: C.surface, borderRadius: 18, padding: "18px 20px",
+          marginBottom: 20, display: "flex", alignItems: "center", gap: 14,
+          border: `1px solid ${C.light}`,
+        }}>
+          <div style={{ fontSize: 32, flexShrink: 0 }}>❤️</div>
+          <div>
+            <p style={{ color: C.dark, fontWeight: 700, fontSize: 14, fontFamily: FONT_SERIF, margin: "0 0 3px" }}>
+              Aucun favori pour l'instant
+            </p>
+            <p style={{ color: C.muted, fontSize: 12, margin: 0, lineHeight: 1.5 }}>
+              Appuyez sur ❤️ dans une fiche café pour la retrouver ici.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* ── Partager ────────────────────────────────────────────────────── */}
       <button onClick={() => shareProfile(userName, archetype)} style={{
         width: "100%", padding: "14px 0", marginBottom: 4,
