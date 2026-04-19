@@ -12,7 +12,7 @@ export const C = {
   surface: "var(--c-surface)",
   shadowSm: "var(--c-shadow-sm)",
   copper:  "var(--c-copper)",
-  green:   "var(--c-roast)",
+  green:   "var(--c-green)",
   // Alpha variants — replace ${C.x}HH hex-alpha patterns
   accent08:  "var(--c-accent-08)",
   accent13:  "var(--c-accent-13)",

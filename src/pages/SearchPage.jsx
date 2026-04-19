@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { C, FONT_SERIF, FONT_SANS, ease } from '../lib/constants';
 import { FilterBar } from '../components/FilterBar';
 import { CoffeeCard, TopRatedCarousel } from '../components/CoffeeCard';
+import { CoffeeIllustration } from '../components/CoffeeIllustration';
 
 export function SearchPage({ coffees, onOpen, onNotFound, onOpenCGU, onOpenPrivacy, onOpenLegal }) {
   const [query, setQuery] = useState("");
@@ -81,8 +82,8 @@ export function SearchPage({ coffees, onOpen, onNotFound, onOpenCGU, onOpenPriva
         <div style={{ textAlign:"center", padding:"52px 24px 40px" }}>
           <div style={{ width:88, height:88, borderRadius:"50%", background:C.light,
             display:"flex", alignItems:"center", justifyContent:"center",
-            margin:"0 auto 20px", fontSize:44 }}>
-            ☕
+            margin:"0 auto 20px" }}>
+            <CoffeeIllustration emoji="☕" size={52}/>
           </div>
           <p style={{ color:C.dark, fontWeight:700, fontSize:20, fontFamily:FONT_SERIF, margin:"0 0 8px", letterSpacing:-0.2 }}>
             {query ? `"${query}" introuvable` : "Aucun café trouvé"}
@@ -100,6 +101,21 @@ export function SearchPage({ coffees, onOpen, onNotFound, onOpenCGU, onOpenPriva
             {query ? `Ajouter "${query}" +` : "Ajouter un café +"}
           </button>
         </div>
+      )}
+
+      {/* Back to top */}
+      {heroScroll > 300 && (
+        <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} style={{
+          position: "fixed", bottom: 88, right: 20, zIndex: 90,
+          width: 44, height: 44, borderRadius: "50%",
+          background: C.primary, border: "none", cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: `0 4px 16px ${C.primary25}`,
+        }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.bg} strokeWidth="2.5" strokeLinecap="round">
+            <polyline points="18 15 12 9 6 15"/>
+          </svg>
+        </button>
       )}
 
       {/* Legal footer */}

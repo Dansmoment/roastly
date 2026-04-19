@@ -14,7 +14,7 @@ const PrivacySheet      = lazy(() => import('./sheets/LegalSheets').then(m => ({
 const LegalMentionsSheet = lazy(() => import('./sheets/LegalSheets').then(m => ({ default: m.LegalMentionsSheet })));
 import { SplashScreen } from './components/SplashScreen';
 import { OnboardingScreen } from './components/OnboardingScreen';
-import { SkeletonList } from './components/Atoms';
+import { SkeletonList, Toast } from './components/Atoms';
 
 const TAB_ORDER = ["search", "scan", "bag"];
 
@@ -65,7 +65,7 @@ function TabIcon({ type, active }) {
     </svg>
   );
   if (type === "scan") return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ stroke: active ? C.white : C.muted }} strokeWidth="2">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ stroke: active ? C.bg : C.white }} strokeWidth="2">
       <path d="M4 7V4h3"/><path d="M17 4h3v3"/><path d="M20 17v3h-3"/><path d="M7 20H4v-3"/>
       <line x1="7" y1="12" x2="17" y2="12"/>
     </svg>
@@ -103,6 +103,8 @@ export default function App() {
   const [showCGU, setShowCGU] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showLegal, setShowLegal] = useState(false);
+  const [toast, setToast] = useState({ message: "", visible: false });
+  const toastTimer = useRef(null);
 
   // Dark mode
   useEffect(() => {
@@ -152,6 +154,12 @@ export default function App() {
       setCoffees(prev => [newCoffee, ...prev]);
     }
     setShowNotFound(false);
+  }, []);
+
+  const showToast = useCallback((message, duration = 2200) => {
+    clearTimeout(toastTimer.current);
+    setToast({ message, visible: true });
+    toastTimer.current = setTimeout(() => setToast(t => ({ ...t, visible: false })), duration);
   }, []);
 
   const handleLogout = useCallback(async () => {
@@ -323,7 +331,7 @@ export default function App() {
                 <TabIcon type={t.icon} active={active}/>
                 <span style={{
                   fontSize: isScan ? 12 : 10, fontWeight: active ? 700 : 500,
-                  color: isScan ? C.white : (active ? C.accent : C.muted),
+                  color: isScan ? (active ? C.bg : C.white) : (active ? C.accent : C.muted),
                   transition: `color 0.2s ${ease}`,
                 }}>{t.label}</span>
               </button>
@@ -337,6 +345,8 @@ export default function App() {
           visible={!!detailCoffee}
           onClose={() => setDetailCoffee(null)}
           user={user}
+          onOpenAuth={() => setShowAuth(true)}
+          showToast={showToast}
         />
         <NotFoundSheet
           visible={showNotFound}
@@ -385,6 +395,7 @@ export default function App() {
           <LegalMentionsSheet visible={showLegal} onClose={() => setShowLegal(false)}/>
         </Suspense>
       </div>
+      <Toast message={toast.message} visible={toast.visible}/>
     </>
   );
 }

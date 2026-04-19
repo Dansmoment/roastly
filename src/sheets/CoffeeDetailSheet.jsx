@@ -5,7 +5,7 @@ import { CoffeeIllustration } from '../components/CoffeeIllustration';
 import { RadarChart, CarbonArc } from '../components/Charts';
 import * as api from '../lib/api';
 
-export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
+export function CoffeeDetailSheet({ coffee, visible, onClose, user, onOpenAuth, showToast }) {
   const scrollRef = useRef(null);
   const [scrollY, setScrollY] = useState(0);
   const [myRating, setMyRating] = useState(0);
@@ -14,6 +14,7 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
   const [isFav, setIsFav] = useState(false);
   const [favAnim, setFavAnim] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (visible && coffee) {
@@ -53,11 +54,19 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
     if (!user) {
       const next = api.toggleLocalFavorite(coffee.id);
       setIsFav(next);
+      showToast?.(next ? "Ajouté aux favoris ❤️" : "Retiré des favoris");
       return;
     }
     try {
-      if (isFav) { await api.removeFavorite(user.id, coffee.id); setIsFav(false); }
-      else { await api.addFavorite(user.id, coffee.id); setIsFav(true); }
+      if (isFav) {
+        await api.removeFavorite(user.id, coffee.id);
+        setIsFav(false);
+        showToast?.("Retiré des favoris");
+      } else {
+        await api.addFavorite(user.id, coffee.id);
+        setIsFav(true);
+        showToast?.("Ajouté aux favoris ❤️");
+      }
     } catch {}
   };
 
@@ -67,8 +76,10 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
     try {
       await api.addReview({ coffeeId: coffee.id, userId: user.id, rating: myRating, comment: "" });
       setRated(true);
+      showToast?.("Note enregistrée ✓");
     } catch {
       setRated(true);
+      showToast?.("Note enregistrée ✓");
     } finally {
       setSubmitting(false);
     }
@@ -92,10 +103,10 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
       }}/>
       <div style={{
         position:"fixed", inset:0, zIndex:201, display:"flex", flexDirection:"column",
-        transform: visible ? "translateY(0)" : "translateY(102%)",
+        transform: visible ? "translateX(-50%) translateY(0)" : "translateX(-50%) translateY(102%)",
         visibility: visible ? "visible" : "hidden",
         transition:`transform 0.42s ${spring}, visibility 0s ${visible ? "0s" : "0.42s"}`,
-        maxWidth:430, left:"50%", marginLeft:-215,
+        maxWidth:430, left:"50%",
       }}>
         <div style={{
           position:"absolute", top:0, left:0, right:0, zIndex:10, padding:"14px 16px",
@@ -148,7 +159,7 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
             </Section>
 
             {flavor.length > 0 && (
-              <Section title="Profil aromatique">
+              <Section title="Profil aromatique" threshold={0.01}>
                 <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:16, flexWrap:"wrap" }}>
                   <RadarChart data={flavor} size={210}/>
                   <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
@@ -228,11 +239,11 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
               <div style={{ textAlign:"center", padding:"8px 0" }}>
                 {!user && (
                   <p style={{ color:C.muted, fontSize:13, marginBottom:12 }}>
-                    <span style={{ color:C.accent, fontWeight:600, cursor:"pointer" }} onClick={onClose}>Connectez-vous</span> pour noter ce café
+                    <span style={{ color:C.accent, fontWeight:600, cursor:"pointer" }} onClick={() => { onClose(); onOpenAuth?.(); }}>Connectez-vous</span> pour noter ce café
                   </p>
                 )}
                 <p style={{ color:C.muted, fontSize:13, marginBottom:16 }}>
-                  {rated ? "Votre note actuelle — cliquez pour modifier" : user ? "Comment l'avez-vous trouvé ?" : ""}
+                  {user && rated ? "Votre note actuelle — cliquez pour modifier" : user ? "Comment l'avez-vous trouvé ?" : ""}
                 </p>
                 <div style={{ display:"flex", justifyContent:"center", gap:10, marginBottom:16 }}>
                   {[1,2,3,4,5].map(s => (
@@ -250,45 +261,44 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
                     </button>
                   ))}
                 </div>
-                {!rated && myRating > 0 && (
+                {user && !rated && myRating > 0 && (
                   <button onClick={handleRate} disabled={submitting} style={{
                     background: C.primary, color:"white", border:"none", borderRadius:99,
                     padding:"11px 28px", fontSize:14, fontWeight:600, cursor:"pointer",
                     opacity: submitting ? 0.6 : 1,
                   }}>{submitting ? "Envoi..." : "Soumettre"}</button>
                 )}
-                {rated && (
-                  <p style={{ color:C.roast, fontSize:13, fontWeight:600 }}>✓ Note enregistrée</p>
-                )}
-                {!user && (
-                  <p style={{ color:C.muted, fontSize:12, marginTop:8 }}>Connectez-vous pour laisser un avis</p>
-                )}
               </div>
             </Section>
           </div>
         </div>
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"12px 20px 28px", background:`linear-gradient(transparent, ${C.bg} 30%)`, pointerEvents:"none" }}>
-          <div style={{ display:"flex", gap:10 }}>
+        <div style={{ position:"absolute", bottom:0, left:0, right:0 }}>
+          <div style={{ height:48, background:`linear-gradient(transparent, ${C.bg})`, pointerEvents:"none" }}/>
+          <div style={{ display:"flex", gap:10, padding:"0 20px 28px", background:C.bg }}>
             <button onClick={handleFavorite} style={{ flex:1, background: isFav ? C.accent : C.primary, color:"white", border:"none",
               borderRadius:16, padding:"15px 20px", fontSize:15, fontWeight:700, cursor:"pointer",
-              boxShadow:`0 8px 24px ${isFav ? C.accent33 : C.primary33}`, pointerEvents:"auto",
+              boxShadow:`0 8px 24px ${isFav ? C.accent33 : C.primary33}`,
               transition:`background 0.25s ${ease}, box-shadow 0.25s ${ease}`,
               animation: favAnim ? "heartPulse 0.38s cubic-bezier(0.34,1.2,0.64,1)" : "none",
-            }}>{isFav ? "Retirer 💔" : "Ajouter ❤️"}</button>
+            }}>{isFav ? "Retirer des favoris 💔" : "Ajouter aux favoris ❤️"}</button>
             <button onClick={() => {
               const text = `${coffee.name} — ${coffee.brand}\n⭐ ${coffee.avg_rating}/5 · ${coffee.origin_flag} ${coffee.origin_country}\n\nDécouvre ce café sur Roastly.`;
               if (navigator.share) navigator.share({ title: coffee.name, text }).catch(() => {});
-              else navigator.clipboard?.writeText(text).then(() => {}).catch(() => {});
+              else navigator.clipboard?.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }).catch(() => {});
             }} style={{
-              width:52, height:52, flexShrink:0, border:`1.5px solid ${C.light}`, borderRadius:16,
-              background:C.bg, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
-              pointerEvents:"auto",
+              minWidth:52, height:52, flexShrink:0, border:`1.5px solid ${copied ? C.accent : C.light}`, borderRadius:16,
+              background: copied ? C.accent08 : C.bg, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+              padding: copied ? "0 14px" : 0,
+              transition:`all 0.2s ${ease}`,
             }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ stroke: C.primary }} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
-                <polyline points="16 6 12 2 8 6"/>
-                <line x1="12" y1="2" x2="12" y2="15"/>
-              </svg>
+              {copied
+                ? <span style={{ color:C.accent, fontSize:12, fontWeight:700, whiteSpace:"nowrap" }}>Copié !</span>
+                : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ stroke: C.primary }} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                    <polyline points="16 6 12 2 8 6"/>
+                    <line x1="12" y1="2" x2="12" y2="15"/>
+                  </svg>
+              }
             </button>
           </div>
         </div>

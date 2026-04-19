@@ -45,8 +45,8 @@ export function useInView(threshold = 0.08) {
   return [ref, visible];
 }
 
-export function FadeIn({ children, delay = 0, y = 18 }) {
-  const [ref, visible] = useInView();
+export function FadeIn({ children, delay = 0, y = 18, threshold }) {
+  const [ref, visible] = useInView(threshold);
   return (
     <div ref={ref} style={{
       opacity: visible ? 1 : 0,
@@ -61,7 +61,7 @@ export function Stars({ rating, size = 13 }) {
     <span style={{ display: "flex", gap: 2, alignItems: "center" }}>
       {[1,2,3,4,5].map(s => (
         <svg key={s} width={size} height={size} viewBox="0 0 24 24"
-          style={{ fill: s <= Math.round(rating) ? C.primary : C.light }}>
+          style={{ fill: s <= Math.round(rating) ? C.accent : C.light }}>
           <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
         </svg>
       ))}
@@ -93,7 +93,7 @@ export function LabelBadge({ label }) {
 export function BackBtn({ onBack }) {
   return (
     <button onClick={onBack} style={{
-      background: "rgba(255,255,255,0.18)", border: "none", borderRadius: 99,
+      background: "rgba(0,0,0,0.28)", border: "none", borderRadius: 99,
       width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center",
       cursor: "pointer", backdropFilter: "blur(8px)", flexShrink: 0,
     }}>
@@ -104,9 +104,9 @@ export function BackBtn({ onBack }) {
   );
 }
 
-export function Section({ title, children }) {
+export function Section({ title, children, threshold }) {
   return (
-    <FadeIn>
+    <FadeIn threshold={threshold}>
       <div style={{ marginBottom:28, paddingTop:22, borderTop:`1px solid ${C.light}` }}>
         <p style={{ color:C.muted, fontSize:11, fontWeight:500, textTransform:"uppercase",
           letterSpacing:1.5, margin:"0 0 14px", fontFamily:FONT_SANS }}>{title}</p>
@@ -142,6 +142,24 @@ export function Toggle({ on, onToggle }) {
         boxShadow:"0 1px 3px rgba(0,0,0,0.15)",
       }}/>
     </div>
+  );
+}
+
+export function Toast({ message, visible }) {
+  return (
+    <div style={{
+      position: "fixed", bottom: 88, left: "50%",
+      transform: `translateX(-50%) translateY(${visible ? 0 : 16}px)`,
+      opacity: visible ? 1 : 0,
+      pointerEvents: "none",
+      zIndex: 600,
+      background: C.dark, color: C.bg,
+      borderRadius: 99, padding: "10px 20px",
+      fontSize: 13, fontWeight: 600,
+      boxShadow: "0 4px 20px rgba(0,0,0,0.22)",
+      transition: `opacity 0.22s ${ease}, transform 0.22s ${ease}`,
+      whiteSpace: "nowrap",
+    }}>{message}</div>
   );
 }
 
