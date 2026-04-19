@@ -21,7 +21,7 @@ export function CoffeeCard({ coffee, onOpen, index = 0 }) {
           display:"flex", alignItems:"center", justifyContent:"center",
           boxShadow:`0 4px 14px ${coffee.gradient[0]}55`, overflow:"hidden" }}>
           {coffee.image_url
-            ? <img src={coffee.image_url} alt={coffee.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+            ? <img src={coffee.image_url} alt={coffee.name} loading="lazy" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
             : <CoffeeIllustration emoji={coffee.emoji} size={34}/>
           }
         </div>
@@ -88,7 +88,7 @@ function CarouselCard({ coffee, onOpen }) {
         display:"flex", alignItems:"center", justifyContent:"center",
         position:"relative", overflow:"hidden" }}>
         {coffee.image_url
-          ? <img src={coffee.image_url} alt={coffee.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+          ? <img src={coffee.image_url} alt={coffee.name} loading="lazy" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
           : <CoffeeIllustration emoji={coffee.emoji} size={58}/>
         }
         <div style={{ position:"absolute", top:8, right:8, background:"rgba(44,62,53,0.06)",

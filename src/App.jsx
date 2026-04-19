@@ -1,15 +1,17 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { C, FONT_SERIF, FONT_SANS, ease, spring } from './lib/constants';
 import { supabase } from './lib/supabase';
 import * as api from './lib/api';
 import { SearchPage } from './pages/SearchPage';
-import { ScanPage } from './pages/ScanPage';
 import { CoffeeBagPage } from './pages/CoffeeBagPage';
+const ScanPage = lazy(() => import('./pages/ScanPage').then(m => ({ default: m.ScanPage })));
 import { CoffeeDetailSheet } from './sheets/CoffeeDetailSheet';
 import { NotFoundSheet } from './sheets/NotFoundSheet';
 import { AuthSheet } from './sheets/AuthSheet';
 import { SettingsSheet, HelpSheet, AboutSheet, ProfileMenuSheet } from './sheets/UtilitySheets';
-import { CGUSheet, PrivacySheet, LegalMentionsSheet } from './sheets/LegalSheets';
+const CGUSheet          = lazy(() => import('./sheets/LegalSheets').then(m => ({ default: m.CGUSheet })));
+const PrivacySheet      = lazy(() => import('./sheets/LegalSheets').then(m => ({ default: m.PrivacySheet })));
+const LegalMentionsSheet = lazy(() => import('./sheets/LegalSheets').then(m => ({ default: m.LegalMentionsSheet })));
 import { SplashScreen } from './components/SplashScreen';
 import { OnboardingScreen } from './components/OnboardingScreen';
 import { SkeletonList } from './components/Atoms';
@@ -270,7 +272,9 @@ export default function App() {
                 />
               )}
               {tab === "scan" && (
-                <ScanPage onFound={handleScanFound} onNotFound={handleNotFound} user={user}/>
+                <Suspense fallback={<div style={{ height: 300 }}/>}>
+                  <ScanPage onFound={handleScanFound} onNotFound={handleNotFound} user={user}/>
+                </Suspense>
               )}
               {tab === "bag" && (
                 <CoffeeBagPage coffees={coffees} onOpen={handleOpenCoffee} user={user}/>
@@ -375,9 +379,11 @@ export default function App() {
           onOpenPrivacy={() => { setShowAbout(false); setShowPrivacy(true); }}
           onOpenLegal={() => { setShowAbout(false); setShowLegal(true); }}
         />
-        <CGUSheet visible={showCGU} onClose={() => setShowCGU(false)}/>
-        <PrivacySheet visible={showPrivacy} onClose={() => setShowPrivacy(false)}/>
-        <LegalMentionsSheet visible={showLegal} onClose={() => setShowLegal(false)}/>
+        <Suspense fallback={null}>
+          <CGUSheet visible={showCGU} onClose={() => setShowCGU(false)}/>
+          <PrivacySheet visible={showPrivacy} onClose={() => setShowPrivacy(false)}/>
+          <LegalMentionsSheet visible={showLegal} onClose={() => setShowLegal(false)}/>
+        </Suspense>
       </div>
     </>
   );

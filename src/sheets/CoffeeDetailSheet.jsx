@@ -110,7 +110,7 @@ export function CoffeeDetailSheet({ coffee, visible, onClose, user }) {
           <div style={{ height:heroH, overflow:"hidden", position:"relative", borderRadius:"0 0 28px 28px" }}>
             <div style={{ position:"absolute", inset:"-20px -1px", background:`linear-gradient(145deg, ${g[0]}, ${g[1]})`, transform:`translateY(${parallaxOffset}px)`, transition:"transform 0.05s linear" }}>
               {coffee.image_url ? (
-                <img src={coffee.image_url} alt={coffee.name} style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center" }}/>
+                <img src={coffee.image_url} alt={coffee.name} loading="eager" style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center" }}/>
               ) : (
                 <>
                   <div style={{ position:"absolute", top:-40, right:-30, width:180, height:180, borderRadius:"50%", background:"rgba(255,255,255,0.07)" }}/>
