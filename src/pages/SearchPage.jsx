@@ -3,7 +3,7 @@ import { C, FONT_SERIF, FONT_SANS, ease } from '../lib/constants';
 import { FilterBar } from '../components/FilterBar';
 import { CoffeeCard, TopRatedCarousel } from '../components/CoffeeCard';
 
-export function SearchPage({ coffees, onOpen, onNotFound }) {
+export function SearchPage({ coffees, onOpen, onNotFound, onOpenCGU, onOpenPrivacy, onOpenLegal }) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
   const [heroScroll, setHeroScroll] = useState(0);
@@ -101,6 +101,23 @@ export function SearchPage({ coffees, onOpen, onNotFound }) {
           </button>
         </div>
       )}
+
+      {/* Legal footer */}
+      <div style={{ borderTop:`1px solid ${C.light}`, marginTop:32, paddingTop:20, paddingBottom:8, textAlign:"center" }}>
+        <div style={{ display:"flex", justifyContent:"center", gap:20, flexWrap:"wrap", marginBottom:10 }}>
+          {[
+            { label:"CGU", onClick: onOpenCGU },
+            { label:"Confidentialité", onClick: onOpenPrivacy },
+            { label:"Mentions légales", onClick: onOpenLegal },
+          ].map(item => (
+            <button key={item.label} onClick={item.onClick} style={{
+              background:"none", border:"none", color:C.muted,
+              fontSize:12, cursor:"pointer", padding:0,
+            }}>{item.label}</button>
+          ))}
+        </div>
+        <p style={{ color:C.muted, fontSize:11, margin:0 }}>© 2026 Roastly. — Données : Open Food Facts (ODbL)</p>
+      </div>
     </div>
   );
 }

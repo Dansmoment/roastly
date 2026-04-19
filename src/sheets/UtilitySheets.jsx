@@ -200,7 +200,7 @@ export function HelpSheet({ visible, onClose }) {
   );
 }
 
-export function AboutSheet({ visible, onClose }) {
+export function AboutSheet({ visible, onClose, onOpenCGU, onOpenPrivacy, onOpenLegal }) {
   return (
     <Sheet visible={visible} onClose={onClose}>
       <div style={{ textAlign:"center", marginBottom:28 }}>
@@ -247,9 +247,27 @@ export function AboutSheet({ visible, onClose }) {
         </div>
       </Section>
 
-      <div style={{ textAlign:"center", padding:"20px 0" }}>
-        <p style={{ color:C.muted, fontSize:12 }}>Fait avec ☕ et ❤️ à Paris</p>
-        <p style={{ color:C.muted, fontSize:11, marginTop:4 }}>© 2026 Roastly. Tous droits réservés.</p>
+      <div style={{ borderTop:`1px solid ${C.light}`, paddingTop:20, marginTop:4 }}>
+        <p style={{ color:C.muted, fontSize:11, fontWeight:500, textTransform:"uppercase", letterSpacing:1.2, marginBottom:14 }}>Légal</p>
+        <div style={{ display:"flex", flexDirection:"column", gap:0 }}>
+          {[
+            { label:"Conditions d'utilisation", onClick: onOpenCGU },
+            { label:"Politique de confidentialité", onClick: onOpenPrivacy },
+            { label:"Mentions légales", onClick: onOpenLegal },
+          ].map(item => (
+            <button key={item.label} onClick={() => { item.onClick?.(); onClose(); }} style={{
+              background:"none", border:"none", padding:"13px 0",
+              borderBottom:`1px solid ${C.light}`, textAlign:"left",
+              display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer",
+            }}>
+              <span style={{ color:C.text, fontSize:14 }}>{item.label}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ stroke:C.muted }} strokeWidth="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          ))}
+        </div>
+        <p style={{ color:C.muted, fontSize:11, textAlign:"center", marginTop:20 }}>Fait avec ☕ et ❤️ à Paris · © 2026 Roastly.</p>
       </div>
     </Sheet>
   );

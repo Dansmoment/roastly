@@ -9,6 +9,7 @@ import { CoffeeDetailSheet } from './sheets/CoffeeDetailSheet';
 import { NotFoundSheet } from './sheets/NotFoundSheet';
 import { AuthSheet } from './sheets/AuthSheet';
 import { SettingsSheet, HelpSheet, AboutSheet, ProfileMenuSheet } from './sheets/UtilitySheets';
+import { CGUSheet, PrivacySheet, LegalMentionsSheet } from './sheets/LegalSheets';
 import { SplashScreen } from './components/SplashScreen';
 import { OnboardingScreen } from './components/OnboardingScreen';
 import { SkeletonList } from './components/Atoms';
@@ -97,6 +98,9 @@ export default function App() {
   const [showHelp, setShowHelp] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showCGU, setShowCGU] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showLegal, setShowLegal] = useState(false);
 
   // Dark mode
   useEffect(() => {
@@ -258,7 +262,12 @@ export default function App() {
           ) : (
             <div key={tab} className={`page-slide-${slideDir}`}>
               {tab === "search" && (
-                <SearchPage coffees={coffees} onOpen={handleOpenCoffee} onNotFound={handleNotFound}/>
+                <SearchPage
+                  coffees={coffees} onOpen={handleOpenCoffee} onNotFound={handleNotFound}
+                  onOpenCGU={() => setShowCGU(true)}
+                  onOpenPrivacy={() => setShowPrivacy(true)}
+                  onOpenLegal={() => setShowLegal(true)}
+                />
               )}
               {tab === "scan" && (
                 <ScanPage onFound={handleScanFound} onNotFound={handleNotFound} user={user}/>
@@ -362,7 +371,13 @@ export default function App() {
         <AboutSheet
           visible={showAbout}
           onClose={() => setShowAbout(false)}
+          onOpenCGU={() => { setShowAbout(false); setShowCGU(true); }}
+          onOpenPrivacy={() => { setShowAbout(false); setShowPrivacy(true); }}
+          onOpenLegal={() => { setShowAbout(false); setShowLegal(true); }}
         />
+        <CGUSheet visible={showCGU} onClose={() => setShowCGU(false)}/>
+        <PrivacySheet visible={showPrivacy} onClose={() => setShowPrivacy(false)}/>
+        <LegalMentionsSheet visible={showLegal} onClose={() => setShowLegal(false)}/>
       </div>
     </>
   );
