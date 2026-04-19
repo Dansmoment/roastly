@@ -295,6 +295,7 @@ function ProfilePage({ coffees, onOpen, user }) {
   const [stats, setStats] = useState({ favorites: 0, reviews: 0 });
   const [tasteProfile, setTasteProfile] = useState(null);
   const [scanHistory, setScanHistory] = useState([]);
+  const [favoriteCoffees, setFavoriteCoffees] = useState([]);
 
   useEffect(() => {
     if (!user) return;
@@ -302,6 +303,7 @@ function ProfilePage({ coffees, onOpen, user }) {
       api.fetchUserStats(user.id).then(setStats).catch(() => {}),
       api.fetchUserTasteProfile(user.id).then(setTasteProfile).catch(() => {}),
       api.fetchScanHistory(user.id).then(d => setScanHistory(d || [])).catch(() => {}),
+      api.fetchFavorites(user.id).then(d => setFavoriteCoffees(d || [])).catch(() => {}),
     ]);
   }, [user]);
 
@@ -432,6 +434,57 @@ function ProfilePage({ coffees, onOpen, user }) {
                   <p style={{ fontSize: 26, margin: "0 0 8px" }}>{c.emoji || "☕"}</p>
                   <p style={{ color: "white", fontWeight: 700, fontSize: 10, fontFamily: FONT_SERIF, margin: "0 0 2px", lineHeight: 1.3 }}>{c.name}</p>
                   <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 9, margin: 0 }}>{c.brand}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Mes favoris ─────────────────────────────────────────────────── */}
+      {favoriteCoffees.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <p style={{ color: C.dark, fontSize: 14, fontWeight: 700, fontFamily: FONT_SERIF, margin: 0 }}>
+              ❤️ Mes favoris
+            </p>
+            <span style={{ color: C.muted, fontSize: 11 }}>{favoriteCoffees.length} café{favoriteCoffees.length > 1 ? "s" : ""}</span>
+          </div>
+          <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "none" }}>
+            {favoriteCoffees.map((c, i) => {
+              const g = c.gradient || [C.accent, C.copper];
+              return (
+                <div key={c.id || i} onClick={() => onOpen(c)} style={{
+                  flexShrink: 0, width: 110,
+                  background: c.image_url ? "transparent" : `linear-gradient(145deg, ${g[0]}, ${g[1]})`,
+                  borderRadius: 16, overflow: "hidden", cursor: "pointer",
+                  position: "relative",
+                }}>
+                  {c.image_url ? (
+                    <>
+                      <img src={c.image_url} alt={c.name} style={{ width: "100%", height: 100, objectFit: "cover", display: "block" }}/>
+                      <div style={{
+                        padding: "8px 10px 10px",
+                        background: `linear-gradient(145deg, ${g[0]}, ${g[1]})`,
+                      }}>
+                        <p style={{ color: "white", fontWeight: 700, fontSize: 10, fontFamily: FONT_SERIF, margin: "0 0 2px", lineHeight: 1.3 }}>{c.name}</p>
+                        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 9, margin: 0 }}>{c.brand}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ padding: "14px 10px" }}>
+                      <p style={{ fontSize: 26, margin: "0 0 8px" }}>{c.emoji || "☕"}</p>
+                      <p style={{ color: "white", fontWeight: 700, fontSize: 10, fontFamily: FONT_SERIF, margin: "0 0 2px", lineHeight: 1.3 }}>{c.name}</p>
+                      <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 9, margin: 0 }}>{c.brand}</p>
+                    </div>
+                  )}
+                  <div style={{
+                    position: "absolute", top: 6, right: 6,
+                    width: 18, height: 18, borderRadius: "50%",
+                    background: "rgba(0,0,0,0.4)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 9,
+                  }}>❤️</div>
                 </div>
               );
             })}
